@@ -30,3 +30,25 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Tab focus styles */
+*:focus-visible {
+  outline: 2px solid #4d96ff;
+  outline-offset: 2px;
+}

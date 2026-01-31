@@ -6,6 +6,12 @@ export interface SanityImage {
   };
 }
 
+export interface NavItem {
+  label: string;
+  href?: string;
+  children?: { label: string; href: string }[];
+}
+
 export interface HeroSlide {
   title: string;
   sub: string;
@@ -13,6 +19,7 @@ export interface HeroSlide {
   primaryLink: string;
   secondaryLink: string;
   primaryCtaText?: string;
+  secondaryCtaText?: string;
 }
 
 export interface FounderData {

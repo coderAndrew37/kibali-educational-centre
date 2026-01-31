@@ -8,7 +8,7 @@ export default function FounderSection() {
           {/* Main Photo */}
           <div className="aspect-[4/5] rounded-2xl overflow-hidden border-8 border-background shadow-2xl">
             <img
-              src="/founder.jpg"
+              src="/founder.avif"
               alt="Founder of Kibali Educational Centre"
               className="w-full h-full object-cover"
             />

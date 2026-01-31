@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface Slide {
   img?: string;
@@ -10,6 +10,7 @@ interface Slide {
   primaryLink: string;
   secondaryLink: string;
   primaryCtaText?: string; // Added to fix property error
+  secondaryCtaText?: string; // Added to fix property error
 }
 
 interface HeroSliderProps {
@@ -26,6 +27,7 @@ export default function HeroSlider({ sanitySlides }: HeroSliderProps) {
       primaryLink: "/admissions",
       secondaryLink: "/tour",
       primaryCtaText: "Enroll Your Child",
+      secondaryCtaText: "Virtual Tour",
     },
     {
       img: "/sports.jpg",
@@ -34,6 +36,7 @@ export default function HeroSlider({ sanitySlides }: HeroSliderProps) {
       primaryLink: "/admissions",
       secondaryLink: "/tour",
       primaryCtaText: "Join the Team",
+      secondaryCtaText: "Take a Tour",
     },
   ];
 
@@ -95,7 +98,7 @@ export default function HeroSlider({ sanitySlides }: HeroSliderProps) {
                   href={slide.secondaryLink || "#"}
                   className="border-2 border-surface/40 text-surface px-12 py-5 rounded-sm font-bold hover:bg-surface/10 backdrop-blur-sm transition-all uppercase text-sm"
                 >
-                  Virtual Tour
+                  {slide.secondaryCtaText || "Virtual Tour"}
                 </Link>
               </div>
             </div>
