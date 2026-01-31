@@ -1,25 +1,23 @@
-import { HeroSlide } from "@/types"; // Create a types file for your interfaces
+// lib/services/hero.ts
 import { client } from "../sanity/client";
+import { HeroSlide } from "@/types";
+import { HERO_QUERY } from "../sanity/queries/hero";
 
 export async function getHeroSlides(): Promise<HeroSlide[]> {
-  const query = `*[_type == "hero"][0].slides[] {
-    title,
-    sub,
-    "imageUrl": image.asset->url,
-    primaryLink,
-    secondaryLink,
-    primaryCtaText
-  }`;
-
-  // Next.js Cache optimization
-  return client.fetch(
-    query,
-    {},
-    {
-      next: {
-        revalidate: 3600, // Background revalidation every hour
-        tags: ["hero"], // Tag for instant manual revalidation via webhooks
+  try {
+    const data = await client.fetch<HeroSlide[]>(
+      HERO_QUERY,
+      {},
+      {
+        next: {
+          revalidate: 3600, // Cache for 1 hour, then background refresh
+          tags: ["hero"], // Key for instant revalidation
+        },
       },
-    },
-  );
+    );
+    return data || [];
+  } catch (error) {
+    console.error("Sanity Fetch Error:", error);
+    return []; // Return empty array so the component falls back to defaults
+  }
 }
