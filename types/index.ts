@@ -57,3 +57,11 @@ export interface StudentLifeService {
 export interface StudentLifeData {
   services: Record<string, StudentLifeService>;
 }
+
+export interface GalleryItem {
+  src: string;
+  size: string;
+  label: string;
+  album: string;
+  year: number;
+}

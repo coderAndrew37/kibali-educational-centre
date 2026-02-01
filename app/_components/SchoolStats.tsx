@@ -84,27 +84,47 @@ export function SchoolStats() {
     );
   };
 
-  // Floating particles background
+  // Floating particles background - Hydration Safe Version
   const FloatingParticles = () => {
+    const [mounted, setMounted] = useState(false);
+    const [particleData, setParticleData] = useState<any[]>([]);
+
+    useEffect(() => {
+      setMounted(true);
+      // Generate random values ONLY on the client after mount
+      const particles = [...Array(20)].map(() => ({
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        moveY: Math.random() * 100 + 50,
+        moveX: Math.random() * 50 + 25,
+        duration: Math.random() * 10 + 10,
+        delay: Math.random() * 5,
+      }));
+      setParticleData(particles);
+    }, []);
+
+    // Return nothing on the server to avoid mismatch
+    if (!mounted) return null;
+
     return (
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {particleData.map((p, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-white/20 rounded-full"
             initial={{
-              x: Math.random() * 100 + "%",
-              y: Math.random() * 100 + "%",
+              x: `${p.x}%`,
+              y: `${p.y}%`,
             }}
             animate={{
-              y: [null, `-${Math.random() * 100 + 50}px`],
-              x: [null, `-${Math.random() * 50 + 25}px`],
+              y: [null, `-${p.moveY}px`],
+              x: [null, `-${p.moveX}px`],
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: p.duration,
               repeat: Infinity,
               ease: "linear",
-              delay: Math.random() * 5,
+              delay: p.delay,
             }}
           />
         ))}
