@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api
+
+# Host
+Host: https://kibali.ac.ke
+
+# Sitemaps
+Sitemap: https://kibali.ac.ke/sitemap.xml
+Sitemap: https://kibali.ac.ke/server-sitemap.xml

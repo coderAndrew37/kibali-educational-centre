@@ -3,7 +3,7 @@ import { getTestimonials } from "@/lib/services/testimonial";
 import CTA from "./_components/CTA";
 import FounderSection from "./_components/FounderSection";
 import Gallery from "./_components/Gallery";
-import Hero from "./_components/Hero"; // This is your HeroSlider
+import Hero from "./_components/Hero";
 import { SchoolStats } from "./_components/SchoolStats";
 import WhyKibali from "./_components/WhyKibali";
 import { getHeroSlides } from "@/lib/services/hero";
@@ -12,28 +12,37 @@ import WelcomeMessage from "./_components/WelcomeMessage";
 import { getGalleryItems } from "@/lib/services/gallery";
 
 export default async function HomePage() {
-  // Fetching slides on the server
   const [slides, testimonials, galleryPreview] = await Promise.all([
     getHeroSlides(),
     getTestimonials(),
-    getGalleryItems(0, 5),
+    getGalleryItems(0, 6), // Use 6 for a balanced grid
   ]);
 
   return (
     <>
-      {/* 1. Hero - Passing fetched data to the client component */}
+      {/* 1. ASPIRATION: High-impact visuals and core value prop */}
       <Hero sanitySlides={slides} />
-      <FounderSection />
-      {/* 2. Stats - Immediate Trust */}
-      <SchoolStats />
-      {/* 3. Gallery - Portfolio */}
-      <Gallery items={galleryPreview} limit={6} />
-      {/* 4. Why Kibali - The Sales Pitch*/}
+
+      {/* 2. AUTHORITY: The "Face" of the institution. 
+          Moved Welcome/Founder up to establish professional trust early. */}
+      <section className="bg-white">
+        <WelcomeMessage />
+        <FounderSection />
+      </section>
+
+      {/* 3. DIFFERENTIATION: Why choose us over other international schools? */}
       <WhyKibali />
-      <WelcomeMessage />
-      {/* 5. Testimonials - Social Proof */}
+
+      {/* 4. EVIDENCE (Quantitative): The hard numbers of success */}
+      <SchoolStats />
+
+      {/* 5. EVIDENCE (Visual): Peek into campus life */}
+      <Gallery items={galleryPreview} limit={6} />
+
+      {/* 6. SOCIAL PROOF: Real stories from parents/students */}
       <Testimonials data={testimonials} />
-      {/* 5. CTA - The Conversion Point */}
+
+      {/* 7. CONVERSION: The final nudge to act */}
       <CTA />
     </>
   );
