@@ -18,13 +18,27 @@ const navLinks = [
       { label: "Junior Secondary", href: "/academics/jss" },
     ],
   },
-  { label: "Admissions", href: "/admissions" },
+  { label: "Admissions", href: "/admission" },
+
+  {
+    label: "Student Life",
+    children: [
+      { label: "Overview", href: "/student-life" },
+      { label: "Boarding Life", href: "/student-life/boarding-school-life" },
+      {
+        label: "Counseling & Wellness",
+        href: "/student-life/counselling-department",
+      },
+      { label: "Sanatorium", href: "/student-life/school-sanatorium" },
+      { label: "Transport", href: "/student-life/transport-services" },
+    ],
+  },
   {
     label: "Portals",
     children: [
-      { label: "Parent Portal", href: "/portals/parents" },
-      { label: "Staff Portal", href: "/portals/staff" },
-      { label: "Student Portal", href: "/portals/students" },
+      { label: "Parent Portal", href: "/portals/parents/sign-in" },
+      { label: "Staff Portal", href: "/portals/staff/sign-in" },
+      { label: "Student Portal", href: "/portals/students/sign-in" },
     ],
   },
 ];

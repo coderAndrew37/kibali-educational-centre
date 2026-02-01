@@ -8,6 +8,7 @@ import { SchoolStats } from "./_components/SchoolStats";
 import WhyKibali from "./_components/WhyKibali";
 import { getHeroSlides } from "@/lib/services/hero";
 import Testimonials from "./_components/Testimonials";
+import WelcomeMessage from "./_components/WelcomeMessage";
 
 export default async function HomePage() {
   // Fetching slides on the server
@@ -28,21 +29,10 @@ export default async function HomePage() {
 
       <Gallery />
 
-      {/* 3. Welcome Section */}
-      <section className="py-20 px-6 bg-surface">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-primary font-bold uppercase tracking-tighter mb-4">
-            A Message from our Director
-          </h2>
-          <p className="text-2xl md:text-3xl text-primary-dark italic max-w-4xl mx-auto leading-snug">
-            "At Kibali Educational Centre, we believe that every child is a star
-            waiting to shine. Our mission is to provide the sky."
-          </p>
-        </div>
-      </section>
-
       {/* 4. Why Kibali - The Sales Pitch */}
       <WhyKibali />
+
+      <WelcomeMessage />
 
       {/* 5. Testimonials - Social Proof */}
       <Testimonials data={testimonials} />

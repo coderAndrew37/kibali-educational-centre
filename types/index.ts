@@ -37,3 +37,23 @@ export interface Testimonial {
   rating: number;
   imageUrl: string;
 }
+
+export interface ServiceHighlight {
+  title: string;
+  content: string;
+}
+
+export interface StudentLifeService {
+  slug: string;
+  title: string;
+  tagline: string;
+  description: string;
+  image: string;
+  benefits: string[];
+  sections: ServiceHighlight[];
+  metaTitle: string;
+}
+
+export interface StudentLifeData {
+  services: Record<string, StudentLifeService>;
+}
