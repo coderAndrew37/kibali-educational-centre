@@ -1,5 +1,3 @@
-import { Script } from "next/script";
-
 export default function SchemaMarkup() {
   const schema = {
     "@context": "https://schema.org",
@@ -20,7 +18,7 @@ export default function SchemaMarkup() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: -1.332, // Replace with your actual coordinates
+      latitude: -1.332,
       longitude: 36.788,
     },
     telephone: "+254700000000",
