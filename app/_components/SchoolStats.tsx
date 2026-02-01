@@ -45,25 +45,25 @@ export function SchoolStats() {
   return (
     <section
       ref={ref}
-      className="bg-[#0A0A0A] py-24 md:py-32 border-y border-white/5"
+      className="bg-[var(--kibali-bg)] py-24 md:py-32 border-y border-slate-200"
     >
       <div className="max-w-7xl mx-auto px-6">
         {/* Minimalist Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
           <div className="max-w-xl">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#C5A059] font-bold mb-4">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[var(--kibali-amber)] font-bold mb-4">
               Institutional Impact
             </h2>
-            <h3 className="text-3xl md:text-4xl font-serif text-black leading-tight">
+            <h3 className="text-3xl md:text-4xl font-serif text-slate-900 leading-tight">
               A legacy of academic excellence and{" "}
-              <span className="italic text-black/60">holistic growth.</span>
+              <span className="italic text-slate-400">holistic growth.</span>
             </h3>
           </div>
-          <div className="hidden md:block h-[1px] flex-1 bg-white/10 mx-12 mb-4" />
+          <div className="hidden md:block h-[1px] flex-1 bg-slate-200 mx-12 mb-4" />
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
+        {/* Stats Grid - Clean Border-Collapse Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border border-slate-200 overflow-hidden">
           {stats.map((stat, index) => (
             <StatCard
               key={index}
@@ -88,20 +88,20 @@ function StatCard({
   index: number;
 }) {
   return (
-    <div className="bg-[#0A0A0A] p-10 group hover:bg-[#111111] transition-colors duration-500">
-      <stat.icon className="w-6 h-6 text-[#C5A059] mb-8 stroke-[1.5px]" />
+    <div className="bg-white p-10 group hover:bg-slate-50 transition-colors duration-500">
+      <stat.icon className="w-6 h-6 text-[var(--kibali-amber)] mb-8 stroke-[1.5px]" />
 
       <div className="space-y-2">
-        <h4 className="text-5xl font-serif text-black tracking-tighter">
+        <h4 className="text-5xl font-serif text-[var(--kibali-navy)] tracking-tighter">
           {isInView ? <Counter value={stat.value} /> : "0"}
         </h4>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-white/40 font-bold">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500 font-bold">
           {stat.label}
         </p>
       </div>
 
-      <div className="mt-8 pt-8 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <p className="text-xs text-white/50 leading-relaxed font-light">
+      <div className="mt-8 pt-8 border-t border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <p className="text-xs text-slate-500 leading-relaxed font-light">
           {stat.description}
         </p>
       </div>

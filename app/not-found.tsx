@@ -35,12 +35,12 @@ export default function NotFound() {
                 { label: "Return Home", href: "/", icon: Home },
                 {
                   label: "Our Academics",
-                  href: "/academics",
+                  href: "/academics/overview",
                   icon: GraduationCap,
                 },
                 {
                   label: "Admissions Office",
-                  href: "/admissions",
+                  href: "/admission",
                   icon: ArrowRight,
                 },
                 { label: "Direct Support", href: "/contact", icon: Phone },

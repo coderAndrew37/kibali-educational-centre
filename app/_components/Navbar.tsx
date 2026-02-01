@@ -1,4 +1,5 @@
 "use client";
+import { label } from "framer-motion/client";
 import Link from "next/link";
 
 const navLinks = [
@@ -13,6 +14,7 @@ const navLinks = [
   {
     label: "Academics",
     children: [
+      { label: "Overview", href: "/academics/overview" },
       { label: "Kindergarten", href: "/academics/kindergarten" },
       { label: "Primary School", href: "/academics/primary" },
       { label: "Junior Secondary", href: "/academics/jss" },
@@ -38,7 +40,7 @@ const navLinks = [
     children: [
       { label: "Parent Portal", href: "/portals/parents/sign-in" },
       { label: "Staff Portal", href: "/portals/staff/sign-in" },
-      { label: "Student Portal", href: "/portals/students/sign-in" },
+      { label: "Student Portal", href: "/portals/student/sign-in" },
     ],
   },
 ];

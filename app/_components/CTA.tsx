@@ -1,4 +1,4 @@
-// components/CTA.tsx
+import Link from "next/link";
 export default function CTA() {
   return (
     <section className="mx-6 my-20">
@@ -17,12 +17,18 @@ export default function CTA() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-accent text-primary-dark font-black px-10 py-4 rounded-lg hover:scale-105 transition-transform">
+            <Link
+              href="/admissions"
+              className="bg-accent text-primary-dark font-black px-10 py-4 rounded-lg hover:scale-105 transition-transform"
+            >
               ENROLL NOW
-            </button>
-            <button className="border border-surface/30 text-surface font-bold px-10 py-4 rounded-lg hover:bg-surface/10 transition-colors">
+            </Link>
+            <Link
+              href="/tour"
+              className="border border-surface/30 text-surface font-bold px-10 py-4 rounded-lg hover:bg-surface/10 transition-colors"
+            >
               BOOK A TOUR
-            </button>
+            </Link>
           </div>
         </div>
       </div>
