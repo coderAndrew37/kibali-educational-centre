@@ -123,7 +123,7 @@ export default function Navbar() {
           {/* Portal Buttons */}
           <div className="flex items-center gap-4">
             <Link
-              href="/apply"
+              href="/admission"
               className="bg-accent text-primary-dark px-6 py-3 rounded-sm font-black text-xs hover:bg-primary hover:text-surface transition-all shadow-lg tracking-tighter"
             >
               APPLY NOW

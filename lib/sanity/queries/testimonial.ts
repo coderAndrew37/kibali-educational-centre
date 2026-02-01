@@ -1,4 +1,4 @@
-export const TESTIMONIAL_QUERY = `*[_type == "testimonial"] | order(_createdAt desc) [0...6] {
+export const TESTIMONIAL_QUERY = `*[_type == "testimonial" && isApproved == true] | order(_createdAt desc) [0...6] {
   parentName,
   role,
   content,

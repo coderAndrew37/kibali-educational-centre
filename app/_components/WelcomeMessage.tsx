@@ -59,15 +59,12 @@ export default function WelcomeMessage() {
             <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
               {/* Placeholder for director image - replace with actual Image component */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent/50 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="text-6xl mb-4">👨‍🏫</div>
-                  <p className="text-white/80 text-sm font-medium">
-                    Dr. James Mwangi
-                  </p>
-                  <p className="text-white/60 text-xs">School Director</p>
-                </div>
-              </div>
+              <Image
+                src="/overview.jpg"
+                alt="school overview"
+                fill
+                className="object-cover w-full h-full"
+              />
 
               {/* Decorative Elements */}
               <motion.div

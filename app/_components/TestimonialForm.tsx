@@ -25,7 +25,7 @@ export default function TestimonialForm({ onSuccess }: Props) {
     formState: { errors },
   } = useForm<TestimonialFormValues>({
     resolver: zodResolver(testimonialSchema),
-    defaultValues: { rating: 5 },
+    defaultValues: { rating: 5, hp_field: "" },
   });
 
   const currentRating = watch("rating");
@@ -37,15 +37,19 @@ export default function TestimonialForm({ onSuccess }: Props) {
     try {
       const response = await fetch("/api/testimonials", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error("Failed to submit");
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Failed to submit");
+      }
 
       onSuccess();
       alert("Thank you! Your testimonial has been submitted for review.");
-    } catch (err) {
-      setServerError("Something went wrong. Please try again.");
+    } catch (err: any) {
+      setServerError(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -53,6 +57,21 @@ export default function TestimonialForm({ onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {/* --- HONEYPOT FIELD --- */}
+      <div
+        className="absolute opacity-0 -z-10 h-0 w-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <label htmlFor="hp_field">If you are human, leave this blank</label>
+        <input
+          id="hp_field"
+          type="text"
+          {...register("hp_field")}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       {/* Name */}
       <div>
         <label className="block text-sm font-bold text-primary-dark mb-2">
