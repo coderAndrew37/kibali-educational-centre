@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./_components/Navbar";
 import Footer from "./_components/Footer";
 import SchemaMarkup from "./_components/SchemaMarkup";
+import FloatingContacts from "./_components/FloatingContact";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,6 +66,7 @@ export default function RootLayout({
         <SchemaMarkup />
         <Navbar />
         {children}
+        <FloatingContacts />
         <Footer />
       </body>
     </html>
