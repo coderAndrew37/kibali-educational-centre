@@ -9,7 +9,7 @@ export const studentLifeData: StudentLifeData = {
       tagline: "A Home Away From Home.",
       description:
         "At Kibali Educational Centre, boarding life is more than just a place to stay — it is a nurturing ecosystem where learners are supported to grow academically, socially, and emotionally.",
-      image: "/images/boarding-hero.jpg",
+      image: "/boarding-hero.avif",
       benefits: [
         "24/7 Professional House Parents",
         "Structured Evening Study Prep",
@@ -36,7 +36,7 @@ export const studentLifeData: StudentLifeData = {
       tagline: "Nurturing the Mind and Soul.",
       description:
         "We believe emotional well-being is the foundation of academic success. Our dedicated department provides a safe, confidential space for every child to express themselves and grow.",
-      image: "/images/counselling-hero.jpg",
+      image: "/test-image.avif",
       benefits: [
         "Certified Professional Counselors",
         "One-on-One Support Sessions",
@@ -63,7 +63,7 @@ export const studentLifeData: StudentLifeData = {
       tagline: "Your Child's Health is Our Priority.",
       description:
         "Kibali operates a modern, fully-equipped sanatorium managed by qualified healthcare professionals to ensure immediate medical attention for all our learners.",
-      image: "/images/sanatorium-hero.jpg",
+      image: "/test-image.avif",
       benefits: [
         "Resident Registered Nurses",
         "24-Hour Emergency Response",
@@ -90,7 +90,7 @@ export const studentLifeData: StudentLifeData = {
       tagline: "Safe, Reliable, and Punctual.",
       description:
         "We offer a robust transport system with a modern fleet of buses, ensuring that our day scholars arrive at school and return home safely and on time.",
-      image: "/images/transport-hero.jpg",
+      image: "/transport-hero.avif",
       benefits: [
         "GPS-Tracked School Buses",
         "Vetted & Experienced Drivers",

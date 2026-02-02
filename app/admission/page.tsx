@@ -1,136 +1,103 @@
+import Link from "next/link";
 import {
-  FileText,
-  CreditCard,
-  ClipboardCheck,
-  CalendarDays,
+  ArrowUpRight,
+  ShieldCheck,
+  Wallet,
+  CalendarRange,
+  UserPlus,
 } from "lucide-react";
-import AdmissionForm from "@/app/_components/AdmissionForm"; // Your existing form
+import AdmissionForm from "../_components/AdmissionForm";
 
-export default function AdmissionsPage() {
-  const steps = [
+export default function AdmissionsHub() {
+  const cards = [
     {
-      icon: FileText,
-      title: "1. Inquiry & Application",
-      desc: "Submit the online form or visit our campus for a prospectus and application kit.",
+      title: "Enrollment Process",
+      desc: "A step-by-step guide to our entry assessments and onboarding.",
+      href: "/admission/process",
+      icon: CalendarRange,
+      cta: "View the Roadmap",
     },
     {
-      icon: ClipboardCheck,
-      title: "2. Assessment",
-      desc: "Learners undergo a friendly age-appropriate placement interview or entry assessment.",
+      title: "Fees & Investment",
+      desc: "Transparent tuition, transport, and meal plan structures for 2026.",
+      href: "/admission/fees",
+      icon: Wallet,
+      cta: "View Fee Schedule",
     },
     {
-      icon: CalendarDays,
-      title: "3. Admission Offer",
-      desc: "Successful applicants receive an offer letter within 48 hours of assessment.",
-    },
-    {
-      icon: CreditCard,
-      title: "4. Fee Payment",
-      desc: "Secure the slot by paying the admission fee and submitting required documents.",
+      title: "Required Documents",
+      desc: "Everything you need to have ready for a successful application.",
+      href: "/admission/requirements",
+      icon: ShieldCheck,
+      cta: "Checklist",
     },
   ];
 
   return (
-    <main className="bg-[var(--kibali-bg)] pt-40 pb-24">
-      {/* 1. Hero Header */}
-      <section className="max-w-7xl mx-auto px-6 mb-24">
-        <h2 className="text-[10px] uppercase tracking-[0.4em] text-[var(--kibali-amber)] font-bold mb-4">
-          Join Our Community
-        </h2>
-        <h1 className="text-5xl md:text-7xl font-serif text-[var(--kibali-navy)] mb-8">
-          Admissions <span className="italic text-slate-400">2026</span>
-        </h1>
-        <p className="text-slate-600 text-lg font-light max-w-2xl leading-relaxed">
-          Kibali Educational Centre welcomes students of all backgrounds who are
-          ready to embrace a rigorous CBC curriculum and a culture of integrity.
-        </p>
-      </section>
-
-      {/* 2. The Process (The Roadmap) */}
-      <section className="bg-white border-y border-slate-100 py-24 mb-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="text-2xl font-serif text-[var(--kibali-navy)] mb-12">
-            The Enrollment Journey
-          </h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            {steps.map((step, i) => (
-              <div key={i} className="space-y-4">
-                <step.icon className="w-8 h-8 text-[var(--kibali-amber)]" />
-                <h4 className="font-bold text-[var(--kibali-navy)] text-sm uppercase tracking-wider">
-                  {step.title}
-                </h4>
-                <p className="text-slate-500 text-sm leading-relaxed font-light">
-                  {step.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Fees & Requirements (Transparency Section) */}
-      <section className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-20 mb-24">
-        <div className="space-y-8">
-          <h3 className="text-3xl font-serif text-[var(--kibali-navy)]">
-            Requirements
-          </h3>
-          <div className="space-y-4">
-            {[
-              "Birth Certificate (Copy & Original for verification)",
-              "Previous School Report Forms (Last 3 terms)",
-              "NEMIS Number / UPI",
-              "2 Passport size photos",
-              "Immunization card (For Kindergarten entry)",
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex gap-3 items-center text-slate-600 font-light"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-[var(--kibali-amber)]" />
-                {item}
-              </div>
-            ))}
-          </div>
-          <div className="p-8 bg-[var(--kibali-navy)] text-white">
-            <h4 className="text-[var(--kibali-amber)] uppercase text-xs font-bold tracking-widest mb-2">
-              Notice
-            </h4>
-            <p className="text-sm font-light">
-              Placement for January 2026 is currently at 85% capacity. We
-              recommend early application for JSS levels.
+    <main className="bg-white min-h-screen pt-32">
+      {/* Hero */}
+      <section className="px-6 max-w-7xl mx-auto mb-20">
+        <div className="bg-primary-dark rounded-[3rem] p-12 md:p-24 relative overflow-hidden">
+          <div className="relative z-10 max-w-2xl">
+            <h1 className="text-surface text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-8">
+              Join the <br /> <span className="text-accent">Community.</span>
+            </h1>
+            <p className="text-surface/70 text-xl font-medium mb-10">
+              Choosing a school is one of the most significant decisions you'll
+              make. We've simplified our process to focus on what matters: your
+              child's future.
             </p>
+            <Link
+              href="#apply"
+              className="inline-flex items-center gap-4 bg-accent text-primary-dark px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform"
+            >
+              Start Application <UserPlus size={18} />
+            </Link>
           </div>
-        </div>
-
-        <div className="bg-slate-50 p-10 border border-slate-100 h-fit">
-          <h3 className="text-xl font-serif text-[var(--kibali-navy)] mb-6">
-            Fee Structure
-          </h3>
-          <p className="text-sm text-slate-500 mb-8 font-light">
-            Click below to download the comprehensive 2026 fee structure
-            including transport and meal plans.
-          </p>
-          <button className="flex items-center gap-3 px-6 py-4 bg-white border border-slate-200 text-xs font-bold uppercase tracking-widest text-[var(--kibali-navy)] hover:border-[var(--kibali-amber)] transition-all w-full justify-center">
-            Download 2026 Fee Structure (PDF)
-          </button>
+          {/* Decorative Background Pattern */}
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
         </div>
       </section>
 
-      {/* 4. The Form (Final Action) */}
+      {/* Navigation Grid */}
+      <section className="px-6 max-w-7xl mx-auto grid md:grid-cols-3 gap-8 mb-32">
+        {cards.map((card, i) => (
+          <Link key={i} href={card.href} className="group">
+            <div className="h-full p-10 bg-slate-50 border border-slate-100 rounded-[2.5rem] hover:bg-primary-dark transition-all duration-500">
+              <card.icon
+                className="text-accent mb-6 group-hover:scale-110 transition-transform"
+                size={40}
+              />
+              <h3 className="text-2xl font-black text-primary-dark group-hover:text-surface uppercase tracking-tighter mb-4">
+                {card.title}
+              </h3>
+              <p className="text-slate-500 group-hover:text-surface/60 mb-8 font-medium">
+                {card.desc}
+              </p>
+              <div className="flex items-center gap-2 text-accent text-[10px] font-black uppercase tracking-[0.2em]">
+                {card.cta} <ArrowUpRight size={14} />
+              </div>
+            </div>
+          </Link>
+        ))}
+      </section>
+
+      {/* Quick Apply Section */}
       <section
-        id="apply-now"
-        className="max-w-7xl mx-auto px-6 pt-24 border-t border-slate-200"
+        id="apply"
+        className="bg-slate-50 py-24 px-6 border-t border-slate-200"
       >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-serif text-[var(--kibali-navy)] mb-4">
-            Begin Your Application
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-black text-primary-dark uppercase tracking-tighter mb-6">
+            Ready to apply?
           </h2>
-          <p className="text-slate-500 font-light">
-            Please fill out the form below and our admissions office will
-            contact you within 24 hours.
+          <p className="text-slate-500 mb-12 font-medium">
+            If you have all your documents ready, you can begin the 5-minute
+            online application now.
           </p>
+
+          <AdmissionForm />
         </div>
-        <AdmissionForm />
       </section>
     </main>
   );
