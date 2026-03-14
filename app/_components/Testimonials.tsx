@@ -5,18 +5,11 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageSquarePlus,
-  Quote,
   Star,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-
+import { motion, AnimatePresence } from "framer-motion";
 import TestimonialForm from "./TestimonialForm";
 
 interface Props {
@@ -24,105 +17,168 @@ interface Props {
 }
 
 export default function Testimonials({ data }: Props) {
-  // We'll use this to trigger your Zod form modal later
+  const [active, setActive] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!data || data.length === 0) return null;
 
+  const featured = data[active];
+
+  const prev = () => setActive((p) => (p - 1 + data.length) % data.length);
+  const next = () => setActive((p) => (p + 1) % data.length);
+
   return (
-    <section className="py-24 px-6 bg-[#F8FAFC] relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
-
-      <div className="max-w-7xl mx-auto relative">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="h-px w-8 bg-accent" />
-              <span className="text-accent font-bold uppercase tracking-[0.2em] text-xs">
-                Community Voices
-              </span>
+    <>
+      <section className="bg-surface py-20 md:py-28 px-4 sm:px-6 lg:px-8 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto">
+          {/* ── Header ───────────────────────────────────────────────────── */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14 md:mb-16">
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-1 w-8 bg-gradient-to-r from-accent to-accent-dark rounded-full" />
+                <span className="text-accent font-black uppercase tracking-[0.3em] text-xs">
+                  Community Voices
+                </span>
+              </div>
+              <h2
+                className="text-primary-dark font-black uppercase tracking-tighter leading-[1.0]
+                text-3xl sm:text-4xl md:text-5xl"
+              >
+                What Our <span className="text-accent">Parents</span> Say
+              </h2>
             </div>
-            <h2 className="text-primary-dark text-4xl md:text-5xl font-black tracking-tight">
-              What Our <span className="text-accent">Parents</span> Say
-            </h2>
-          </div>
 
-          <div className="flex items-center gap-4">
-            {/* Submit Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-white border border-accent/20 text-accent font-bold rounded-full hover:bg-accent hover:text-white transition-all shadow-sm active:scale-95"
+              className="shrink-0 flex items-center gap-2 border border-slate-200 text-primary-dark font-black text-xs uppercase tracking-widest px-5 py-3 hover:border-accent hover:text-accent transition-colors"
             >
-              <MessageSquarePlus size={20} />
-              <span className="text-sm">Share Your Story</span>
+              <MessageSquarePlus size={15} />
+              Share Your Story
             </button>
-
-            {/* Navigation buttons */}
-            <div className="hidden md:flex gap-3">
-              <button
-                aria-label="previous testimonial"
-                className="testimonial-prev p-3 rounded-full border border-primary/10 bg-white text-primary hover:bg-accent hover:text-white transition-all shadow-sm"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button
-                aria-label="next testimonial"
-                className="testimonial-next p-3 rounded-full border border-primary/10 bg-white text-primary hover:bg-accent hover:text-white transition-all shadow-sm"
-              >
-                <ChevronRight size={24} />
-              </button>
-            </div>
           </div>
-        </div>
 
-        <Swiper
-          modules={[Autoplay, Pagination, Navigation]}
-          spaceBetween={30}
-          slidesPerView={1}
-          loop={true}
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
-          navigation={{
-            prevEl: ".testimonial-prev",
-            nextEl: ".testimonial-next",
-          }}
-          pagination={{ clickable: true, el: ".swiper-pagination-custom" }}
-          breakpoints={{
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
-          }}
-          className="pb-16"
-        >
-          {data.map((t, i) => (
-            <SwiperSlide key={i}>
-              <div className="h-full bg-white p-10 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col justify-between">
-                <div>
-                  <div className="bg-accent/10 w-12 h-12 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent group-hover:rotate-[360deg] transition-all duration-700">
-                    <Quote
-                      className="text-accent group-hover:text-white transition-colors"
-                      size={24}
-                    />
-                  </div>
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(5)].map((_, idx) => (
+          {/* ── Split layout ─────────────────────────────────────────────── */}
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+            {/* Left — featured quote */}
+            <div className="lg:col-span-7">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Stars */}
+                  <div className="flex gap-1.5 mb-8">
+                    {[...Array(5)].map((_, i) => (
                       <Star
-                        key={idx}
+                        key={i}
                         size={16}
                         className={
-                          idx < t.rating
+                          i < featured.rating
                             ? "fill-accent text-accent"
                             : "text-slate-200"
                         }
                       />
                     ))}
                   </div>
-                  <p className="text-slate-600 text-lg leading-relaxed mb-8 italic italic">
-                    "{t.content}"
-                  </p>
-                </div>
 
-                <div className="flex items-center gap-4 pt-8 border-t border-slate-50">
-                  <div className="h-14 w-14 rounded-2xl bg-slate-100 overflow-hidden relative border-2 border-white shadow-md">
+                  {/* Quote mark */}
+                  <div
+                    className="text-8xl text-accent font-black leading-none mb-2 select-none"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    "
+                  </div>
+
+                  {/* Quote text */}
+                  <blockquote
+                    className="text-primary-dark font-medium leading-relaxed mb-10
+                    text-xl sm:text-2xl md:text-3xl tracking-tight"
+                  >
+                    {featured.content}
+                  </blockquote>
+
+                  {/* Author + nav */}
+                  <div className="flex items-center justify-between pt-8 border-t border-slate-100">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 shrink-0 overflow-hidden relative">
+                        {featured.imageUrl ? (
+                          <Image
+                            src={featured.imageUrl}
+                            alt={featured.parentName}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-accent/10 text-accent font-black">
+                            {featured.parentName[0]}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-black text-primary-dark text-sm uppercase tracking-tight">
+                          {featured.parentName}
+                        </p>
+                        <p className="text-accent text-[10px] font-black uppercase tracking-[0.3em] mt-0.5">
+                          {featured.role}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Arrows */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={prev}
+                        aria-label="Previous"
+                        className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-accent hover:text-accent transition-colors text-slate-400"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={next}
+                        aria-label="Next"
+                        className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-accent hover:text-accent transition-colors text-slate-400"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Progress dots */}
+                  <div className="flex gap-2 mt-6">
+                    {data.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActive(i)}
+                        aria-label={`Testimonial ${i + 1}`}
+                        className={`h-1 transition-all duration-300 ${
+                          active === i
+                            ? "w-8 bg-accent"
+                            : "w-3 bg-slate-200 hover:bg-slate-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Right — stacked list */}
+            <div className="lg:col-span-5 space-y-px">
+              {data.map((t, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className={`w-full text-left flex items-start gap-4 p-5 transition-all duration-200 border-l-2 ${
+                    active === i
+                      ? "bg-slate-50 border-accent"
+                      : "bg-surface border-transparent hover:bg-slate-50 hover:border-slate-200"
+                  }`}
+                >
+                  {/* Avatar */}
+                  <div className="shrink-0 w-9 h-9 overflow-hidden relative">
                     {t.imageUrl ? (
                       <Image
                         src={t.imageUrl}
@@ -131,47 +187,84 @@ export default function Testimonials({ data }: Props) {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary font-bold text-xl">
+                      <div className="w-full h-full flex items-center justify-center bg-accent/10 text-accent font-black text-sm">
                         {t.parentName[0]}
                       </div>
                     )}
                   </div>
-                  <div>
-                    <h4 className="text-primary-dark font-black text-lg">
-                      {t.parentName}
-                    </h4>
-                    <p className="text-accent text-xs font-bold uppercase tracking-widest">
-                      {t.role}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p
+                        className={`font-black text-xs uppercase tracking-tight truncate ${
+                          active === i ? "text-primary-dark" : "text-slate-500"
+                        }`}
+                      >
+                        {t.parentName}
+                      </p>
+                      <div className="flex gap-0.5 shrink-0">
+                        {[...Array(5)].map((_, idx) => (
+                          <Star
+                            key={idx}
+                            size={9}
+                            className={
+                              idx < t.rating
+                                ? "fill-accent text-accent"
+                                : "text-slate-200"
+                            }
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p
+                      className={`text-xs leading-relaxed line-clamp-2 ${
+                        active === i ? "text-slate-500" : "text-slate-400"
+                      }`}
+                    >
+                      {t.content}
                     </p>
                   </div>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <div className="swiper-pagination-custom flex justify-center gap-2 mt-4 md:hidden" />
-      </div>
-
-      {/* Testimonial Modal */}
+      {/* ── Modal ──────────────────────────────────────────────────────────── */}
       {isModalOpen && (
-        <TestimonialForm onSuccess={() => setIsModalOpen(false)} />
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-primary-dark/40 backdrop-blur-sm"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-surface shadow-2xl shadow-slate-900/10 overflow-hidden"
+          >
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <p className="text-accent font-black text-[10px] uppercase tracking-[0.3em] mb-1">
+                  Community Voices
+                </p>
+                <h3 className="font-black text-primary-dark uppercase tracking-tight text-base">
+                  Share Your Story
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="w-9 h-9 flex items-center justify-center border border-slate-200 hover:border-accent hover:text-accent transition-colors text-slate-400 text-sm font-black"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="px-8 py-8">
+              <TestimonialForm onSuccess={() => setIsModalOpen(false)} />
+            </div>
+          </motion.div>
+        </div>
       )}
-
-      <style jsx global>{`
-        .swiper-pagination-custom .swiper-pagination-bullet {
-          width: 12px;
-          height: 12px;
-          background: #e2e8f0;
-          opacity: 1;
-          transition: all 0.3s;
-        }
-        .swiper-pagination-custom .swiper-pagination-bullet-active {
-          width: 30px;
-          border-radius: 6px;
-          background: #c39333;
-        }
-      `}</style>
-    </section>
+    </>
   );
 }
