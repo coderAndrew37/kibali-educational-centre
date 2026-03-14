@@ -18,14 +18,14 @@ export default function CTA() {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/admissions"
-              className="bg-accent text-primary-dark font-black px-10 py-4 rounded-lg hover:scale-105 transition-transform"
+              href="/admission"
+              className="bg-accent text-primary-dark font-black px-10 py-4 rounded-lg hover:scale-105 transition-transform cursor-pointer"
             >
               ENROLL NOW
             </Link>
             <Link
               href="/tour"
-              className="border border-surface/30 text-surface font-bold px-10 py-4 rounded-lg hover:bg-surface/10 transition-colors"
+              className="border border-surface/30 text-surface font-bold px-10 py-4 rounded-lg hover:bg-surface/10 transition-colors cursor-pointer"
             >
               BOOK A TOUR
             </Link>

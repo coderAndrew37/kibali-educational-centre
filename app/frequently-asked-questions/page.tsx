@@ -1,13 +1,11 @@
-// app/faq/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   ChevronDown,
-  ChevronUp,
   Plus,
   Search,
   MessageSquare,
@@ -22,58 +20,149 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import PageHero from "../_components/PageHero";
 
-// Zod Schema for question submission
+// ─── Schema ──────────────────────────────────────────────────────────────────
+
 const questionSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Name must be at least 2 characters" })
-    .max(100, { message: "Name cannot exceed 100 characters" }),
-
-  email: z
-    .string()
-    .email({ message: "Please enter a valid email address" })
-    .max(100, { message: "Email cannot exceed 100 characters" }),
-
-  category: z.enum(
-    [
-      "admissions",
-      "academics",
-      "fees",
-      "facilities",
-      "extracurricular",
-      "general",
-    ],
-    {
-      message: "Please select a category",
-    },
-  ),
-
-  question: z
-    .string()
-    .min(10, { message: "Question must be at least 10 characters" })
-    .max(500, { message: "Question cannot exceed 500 characters" }),
-
-  agreeToTerms: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the terms",
-  }),
+  name: z.string().min(2).max(100),
+  email: z.string().email().max(100),
+  category: z.enum([
+    "admissions",
+    "academics",
+    "fees",
+    "facilities",
+    "extracurricular",
+    "general",
+  ]),
+  question: z.string().min(10).max(500),
+  agreeToTerms: z
+    .boolean()
+    .refine((v) => v === true, { message: "You must agree to the terms" }),
 });
 
 type QuestionFormData = z.infer<typeof questionSchema>;
 
+// ─── Data ─────────────────────────────────────────────────────────────────────
+
+const categories = [
+  { id: "all", label: "All Questions", icon: HelpCircle, count: null },
+  { id: "admissions", label: "Admissions", icon: GraduationCap, count: 8 },
+  { id: "academics", label: "Academics", icon: BookOpen, count: 6 },
+  { id: "fees", label: "Fees & Payment", icon: CreditCard, count: 5 },
+  { id: "facilities", label: "Facilities", icon: Users, count: 4 },
+  { id: "extracurricular", label: "Extracurricular", icon: Clock, count: 7 },
+  { id: "general", label: "General", icon: MessageSquare, count: 10 },
+];
+
+const faqs = [
+  {
+    id: 1,
+    question: "What is the age requirement for PP1 enrollment?",
+    answer:
+      "Children must be 4 years old by January 31st of the academic year to enroll in PP1.",
+    category: "admissions",
+  },
+  {
+    id: 2,
+    question: "What documents are required for admission?",
+    answer:
+      "Required documents include: Birth certificate, previous school reports, immunization records, 2 passport photos, and copies of parents' ID/passport.",
+    category: "admissions",
+  },
+  {
+    id: 3,
+    question: "Do you offer scholarships or financial aid?",
+    answer:
+      "Yes, we offer merit-based scholarships and need-based financial aid. Applications are reviewed quarterly.",
+    category: "admissions",
+  },
+  {
+    id: 4,
+    question: "What curriculum do you follow?",
+    answer:
+      "We follow the Kenyan Competency-Based Curriculum (CBC) with enhancements in STEM and digital literacy.",
+    category: "academics",
+  },
+  {
+    id: 5,
+    question: "What is the student-teacher ratio?",
+    answer:
+      "Our average student-teacher ratio is 15:1, ensuring personalized attention for every learner.",
+    category: "academics",
+  },
+  {
+    id: 6,
+    question: "What payment methods do you accept?",
+    answer:
+      "We accept bank transfers, M-Pesa, credit/debit cards, and cash payments at our finance office.",
+    category: "fees",
+  },
+  {
+    id: 7,
+    question: "Are there any hidden fees?",
+    answer:
+      "No. All fees are clearly outlined in our fee structure document provided during admission.",
+    category: "fees",
+  },
+  {
+    id: 8,
+    question: "Do you have boarding facilities?",
+    answer:
+      "Currently, we offer day school only. However, we're working on boarding facilities for 2025.",
+    category: "facilities",
+  },
+  {
+    id: 9,
+    question: "What sports do you offer?",
+    answer:
+      "We offer football, basketball, swimming, athletics, tennis, and martial arts.",
+    category: "extracurricular",
+  },
+  {
+    id: 10,
+    question: "What clubs and societies are available?",
+    answer:
+      "We have over 25 clubs including Robotics Club, Debate Society, Music Band, Drama Club, and Environmental Club.",
+    category: "extracurricular",
+  },
+  {
+    id: 11,
+    question: "What are your school hours?",
+    answer:
+      "Regular hours are 7:30 AM to 3:30 PM. Extracurricular activities run until 5:00 PM.",
+    category: "general",
+  },
+  {
+    id: 12,
+    question: "Do you provide transportation services?",
+    answer:
+      "Yes, we have a reliable school bus service covering major routes in Nairobi.",
+    category: "general",
+  },
+];
+
+// Shared input / field styles — mirrors ContactPage
+const inputBase =
+  "w-full px-4 py-3 bg-background border text-primary-dark placeholder:text-slate-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 rounded-sm";
+const inputError = "border-red-300";
+const inputNormal = "border-slate-200";
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function FAQPage() {
   const [openFaqs, setOpenFaqs] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [userQuestions, setUserQuestions] = useState<
     Array<{
       id: number;
       question: string;
       category: string;
-      answer?: string;
       date: string;
       status: "pending" | "answered";
+      answer?: string;
     }>
   >([]);
 
@@ -85,154 +174,8 @@ export default function FAQPage() {
     watch,
   } = useForm<QuestionFormData>({
     resolver: zodResolver(questionSchema),
-    defaultValues: {
-      category: "general",
-      agreeToTerms: false,
-    },
+    defaultValues: { category: "general", agreeToTerms: false },
   });
-
-  const categories = [
-    {
-      id: "all",
-      label: "All Questions",
-      icon: <HelpCircle className="w-4 h-4" />,
-      count: 0,
-    },
-    {
-      id: "admissions",
-      label: "Admissions",
-      icon: <GraduationCap className="w-4 h-4" />,
-      count: 8,
-    },
-    {
-      id: "academics",
-      label: "Academics",
-      icon: <BookOpen className="w-4 h-4" />,
-      count: 6,
-    },
-    {
-      id: "fees",
-      label: "Fees & Payment",
-      icon: <CreditCard className="w-4 h-4" />,
-      count: 5,
-    },
-    {
-      id: "facilities",
-      label: "Facilities",
-      icon: <Users className="w-4 h-4" />,
-      count: 4,
-    },
-    {
-      id: "extracurricular",
-      label: "Extracurricular",
-      icon: <Clock className="w-4 h-4" />,
-      count: 7,
-    },
-    {
-      id: "general",
-      label: "General",
-      icon: <MessageSquare className="w-4 h-4" />,
-      count: 10,
-    },
-  ];
-
-  const faqs = [
-    // Admissions
-    {
-      id: 1,
-      question: "What is the age requirement for PP1 enrollment?",
-      answer:
-        "Children must be 4 years old by January 31st of the academic year to enroll in PP1.",
-      category: "admissions",
-    },
-    {
-      id: 2,
-      question: "What documents are required for admission?",
-      answer:
-        "Required documents include: Birth certificate, previous school reports, immunization records, 2 passport photos, and copies of parents' ID/passport.",
-      category: "admissions",
-    },
-    {
-      id: 3,
-      question: "Do you offer scholarships or financial aid?",
-      answer:
-        "Yes, we offer merit-based scholarships and need-based financial aid. Applications are reviewed quarterly.",
-      category: "admissions",
-    },
-
-    // Academics
-    {
-      id: 4,
-      question: "What curriculum do you follow?",
-      answer:
-        "We follow the Kenyan Competency-Based Curriculum (CBC) with enhancements in STEM and digital literacy.",
-      category: "academics",
-    },
-    {
-      id: 5,
-      question: "What is the student-teacher ratio?",
-      answer:
-        "Our average student-teacher ratio is 15:1, ensuring personalized attention for every learner.",
-      category: "academics",
-    },
-
-    // Fees
-    {
-      id: 6,
-      question: "What payment methods do you accept?",
-      answer:
-        "We accept bank transfers, M-Pesa, credit/debit cards, and cash payments at our finance office.",
-      category: "fees",
-    },
-    {
-      id: 7,
-      question: "Are there any hidden fees?",
-      answer:
-        "No. All fees are clearly outlined in our fee structure document provided during admission.",
-      category: "fees",
-    },
-
-    // Facilities
-    {
-      id: 8,
-      question: "Do you have boarding facilities?",
-      answer:
-        "Currently, we offer day school only. However, we're working on boarding facilities for 2025.",
-      category: "facilities",
-    },
-
-    // Extracurricular
-    {
-      id: 9,
-      question: "What sports do you offer?",
-      answer:
-        "We offer football, basketball, swimming, athletics, tennis, and martial arts.",
-      category: "extracurricular",
-    },
-    {
-      id: 10,
-      question: "What clubs and societies are available?",
-      answer:
-        "We have over 25 clubs including Robotics Club, Debate Society, Music Band, Drama Club, and Environmental Club.",
-      category: "extracurricular",
-    },
-
-    // General
-    {
-      id: 11,
-      question: "What are your school hours?",
-      answer:
-        "Regular hours are 7:30 AM to 3:30 PM. Extracurricular activities run until 5:00 PM.",
-      category: "general",
-    },
-    {
-      id: 12,
-      question: "Do you provide transportation services?",
-      answer:
-        "Yes, we have a reliable school bus service covering major routes in Nairobi.",
-      category: "general",
-    },
-  ];
 
   const filteredFaqs = faqs.filter((faq) => {
     const matchesSearch =
@@ -243,240 +186,187 @@ export default function FAQPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const toggleFaq = (id: number) => {
+  const toggleFaq = (id: number) =>
     setOpenFaqs((prev) =>
-      prev.includes(id) ? prev.filter((faqId) => faqId !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
-  };
 
   const onSubmit = async (data: QuestionFormData) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const newQuestion = {
-      id: Date.now(),
-      question: data.question,
-      category: data.category,
-      date: new Date().toISOString().split("T")[0],
-      status: "pending" as const,
-    };
-
-    setUserQuestions((prev) => [newQuestion, ...prev]);
+    await new Promise((r) => setTimeout(r, 1000));
+    setUserQuestions((prev) => [
+      {
+        id: Date.now(),
+        question: data.question,
+        category: data.category,
+        date: new Date().toISOString().split("T")[0],
+        status: "pending",
+      },
+      ...prev,
+    ]);
     setIsSubmitted(true);
     reset();
-
     setTimeout(() => setIsSubmitted(false), 5000);
   };
 
-  // Load user questions from localStorage
-  useEffect(() => {
-    const savedQuestions = localStorage.getItem("userQuestions");
-    if (savedQuestions) {
-      setUserQuestions(JSON.parse(savedQuestions));
-    }
-  }, []);
-
-  // Save user questions to localStorage
-  useEffect(() => {
-    localStorage.setItem("userQuestions", JSON.stringify(userQuestions));
-  }, [userQuestions]);
-
   return (
-    <main className="min-h-screen pt-20 bg-gradient-to-b from-white via-primary/5 to-background">
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-dark via-primary to-accent overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-dark/90 via-primary/80 to-accent/70" />
-          <motion.div
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-white/10 to-accent/20 blur-3xl"
-            animate={{
-              y: [0, -50, 0],
-              x: [0, 50, 0],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
+    <main className="min-h-screen bg-background overflow-x-hidden">
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <PageHero
+        image="/campus-1.jpg"
+        eyebrow="Help Centre"
+        title="Find Answers"
+        accentWord="Answers"
+        tagline="Everything you need to know about Kibali Educational Centre. Can't find what you're looking for? Ask us directly."
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "FAQ", href: "#" },
+        ]}
+        overlayOpacity={0.68}
+        minHeight="52vh"
+      />
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6"
-            >
-              Find <span className="text-accent">Answers</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-white/80 max-w-3xl mx-auto"
-            >
-              Everything you need to know about Kibali Educational Centre. Can't
-              find what you're looking for? Ask us directly!
-            </motion.p>
-          </div>
-        </div>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Search Bar */}
-        <div className="mb-12">
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-dark/40 w-6 h-6" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        {/* ── Search ───────────────────────────────────────────────────────── */}
+        <div className="mb-12 max-w-2xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search for answers..."
+              placeholder="Search for answers…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-primary/20 shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-lg"
+              className="w-full pl-12 pr-4 py-4 bg-surface border border-slate-200 text-primary-dark placeholder:text-slate-400 text-base focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all rounded-sm shadow-sm"
             />
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Left Column - Categories */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              <div className="bg-white rounded-3xl shadow-xl border border-primary/10 p-6">
-                <h2 className="text-2xl font-bold text-primary-dark mb-6">
-                  Categories
-                </h2>
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`w-full flex items-center justify-between p-4 rounded-xl transition-all ${
-                        selectedCategory === category.id
-                          ? "bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20"
-                          : "hover:bg-primary/5"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            selectedCategory === category.id
-                              ? "bg-gradient-to-r from-accent to-accent-dark text-white"
-                              : "bg-primary/10 text-primary-dark"
-                          }`}
-                        >
-                          {category.icon}
-                        </div>
-                        <span className="font-medium text-primary-dark">
-                          {category.label}
-                        </span>
-                      </div>
-                      {category.id !== "all" && (
-                        <span className="text-sm font-semibold text-primary-dark/60">
-                          {category.count}
-                        </span>
-                      )}
-                    </button>
-                  ))}
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+          {/* ── Sidebar ──────────────────────────────────────────────────── */}
+          <aside className="lg:col-span-1 order-2 lg:order-1">
+            <div className="lg:sticky lg:top-28 space-y-6">
+              {/* Category list */}
+              <div className="bg-surface border border-slate-100">
+                <div className="px-6 py-5 border-b border-slate-100">
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary-dark">
+                    Categories
+                  </h2>
                 </div>
-
-                {/* Stats */}
-                <div className="mt-8 pt-8 border-t border-primary/10">
-                  <h3 className="font-bold text-primary-dark mb-4">
-                    FAQ Statistics
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-primary/5 rounded-xl">
-                      <div className="text-2xl font-bold text-accent mb-1">
-                        {faqs.length}
-                      </div>
-                      <div className="text-sm text-primary-dark/70">
-                        Questions Answered
-                      </div>
-                    </div>
-                    <div className="text-center p-4 bg-primary/5 rounded-xl">
-                      <div className="text-2xl font-bold text-accent mb-1">
-                        {userQuestions.length}
-                      </div>
-                      <div className="text-sm text-primary-dark/70">
-                        Your Questions
-                      </div>
-                    </div>
-                  </div>
+                <div className="divide-y divide-slate-50">
+                  {categories.map((cat) => {
+                    const Icon = cat.icon;
+                    const active = selectedCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setSelectedCategory(cat.id)}
+                        className={`w-full flex items-center justify-between px-5 py-3.5 transition-colors ${
+                          active
+                            ? "bg-accent/10 border-l-2 border-accent"
+                            : "hover:bg-slate-50 border-l-2 border-transparent"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon
+                            className={`w-4 h-4 shrink-0 ${active ? "text-accent" : "text-slate-400"}`}
+                          />
+                          <span className="text-sm font-bold text-primary-dark">
+                            {cat.label}
+                          </span>
+                        </div>
+                        {cat.count !== null && (
+                          <span className="text-xs font-bold text-slate-400">
+                            {cat.count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Middle Column - FAQs */}
-          <div className="lg:col-span-2">
+              {/* Stats */}
+              <div className="grid grid-cols-2 gap-px bg-slate-200 border border-slate-200 overflow-hidden">
+                {[
+                  { value: faqs.length, label: "Answered" },
+                  { value: userQuestions.length, label: "Your Questions" },
+                ].map((s) => (
+                  <div key={s.label} className="bg-surface p-6 text-center">
+                    <div className="text-3xl font-black text-primary-dark tracking-tighter mb-1">
+                      {s.value}
+                    </div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
+
+          {/* ── Main column ──────────────────────────────────────────────── */}
+          <div className="lg:col-span-2 order-1 lg:order-2 space-y-8">
+            {/* Success toast */}
             <AnimatePresence>
               {isSubmitted && (
                 <motion.div
-                  initial={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: -12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="mb-8 p-6 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-2xl shadow-lg"
+                  exit={{ opacity: 0, y: -12 }}
+                  className="flex items-center gap-4 p-5 bg-emerald-50 border border-emerald-200 rounded-sm"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 flex items-center justify-center">
-                      <CheckCircle className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-emerald-900 mb-1">
-                        Question Submitted!
-                      </h3>
-                      <p className="text-emerald-700">
-                        Your question has been received. Our team will respond
-                        within 48 hours.
-                      </p>
-                    </div>
+                  <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <div>
+                    <p className="font-black text-emerald-900 text-sm uppercase tracking-widest">
+                      Question Submitted
+                    </p>
+                    <p className="text-emerald-700 text-sm mt-0.5">
+                      Our team will respond within 48 hours.
+                    </p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* User Questions */}
+            {/* User questions */}
             {userQuestions.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-primary-dark mb-6 flex items-center gap-3">
-                  <MessageSquare className="w-6 h-6 text-accent" />
-                  Your Questions
-                </h2>
-                <div className="space-y-4">
-                  {userQuestions.map((userQ) => (
+              <div>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-1 w-8 bg-gradient-to-r from-accent to-accent-dark rounded-full" />
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-accent">
+                    Your Questions
+                  </h2>
+                </div>
+                <div className="space-y-3">
+                  {userQuestions.map((uq) => (
                     <div
-                      key={userQ.id}
-                      className="bg-white rounded-2xl border border-primary/10 p-6"
+                      key={uq.id}
+                      className="bg-surface border border-slate-100 p-6"
                     >
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                              userQ.status === "pending"
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-emerald-100 text-emerald-800"
-                            }`}
-                          >
-                            {userQ.status === "pending"
-                              ? "Pending Response"
-                              : "Answered"}
-                          </span>
-                          <span className="ml-3 text-sm text-primary-dark/60">
-                            {userQ.date}
-                          </span>
-                        </div>
-                        <span className="text-sm font-medium text-primary-dark/70 capitalize">
-                          {userQ.category}
+                      <div className="flex flex-wrap items-center gap-3 mb-3">
+                        <span
+                          className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 ${
+                            uq.status === "pending"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-emerald-100 text-emerald-800"
+                          }`}
+                        >
+                          {uq.status === "pending" ? "Pending" : "Answered"}
+                        </span>
+                        <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                          {uq.category}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {uq.date}
                         </span>
                       </div>
-                      <p className="text-primary-dark font-medium mb-3">
-                        {userQ.question}
+                      <p className="text-primary-dark font-bold text-sm leading-relaxed">
+                        {uq.question}
                       </p>
-                      {userQ.answer && (
-                        <div className="mt-4 p-4 bg-primary/5 rounded-xl border-l-4 border-accent">
-                          <p className="text-primary-dark/80">{userQ.answer}</p>
+                      {uq.answer && (
+                        <div className="mt-4 p-4 bg-background border-l-2 border-accent">
+                          <p className="text-slate-600 text-sm leading-relaxed">
+                            {uq.answer}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -485,141 +375,134 @@ export default function FAQPage() {
               </div>
             )}
 
-            {/* FAQ List */}
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold text-primary-dark mb-6">
-                Frequently Asked Questions
-                <span className="text-primary-dark/60 text-lg font-normal ml-2">
-                  ({filteredFaqs.length} questions)
+            {/* FAQ accordion */}
+            <div>
+              <div className="flex flex-wrap items-baseline gap-3 mb-6">
+                <h2 className="text-2xl md:text-3xl font-black text-primary-dark uppercase tracking-tight">
+                  Frequently Asked
+                </h2>
+                <span className="text-accent font-black text-sm uppercase tracking-widest">
+                  {filteredFaqs.length} questions
                 </span>
-              </h2>
+              </div>
 
-              <div className="space-y-4">
-                {filteredFaqs.map((faq, index) => (
-                  <motion.div
-                    key={faq.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-white rounded-2xl border border-primary/10 shadow-sm overflow-hidden"
-                  >
-                    <button
-                      onClick={() => toggleFaq(faq.id)}
-                      className="w-full p-6 text-left flex justify-between items-center hover:bg-primary/5 transition-colors"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-accent/10 to-accent/5 flex items-center justify-center flex-shrink-0">
-                          <HelpCircle className="w-5 h-5 text-accent" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-primary-dark text-lg mb-2">
-                            {faq.question}
-                          </h3>
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary-dark">
-                            {
-                              categories.find((c) => c.id === faq.category)
-                                ?.label
-                            }
-                          </span>
-                        </div>
-                      </div>
-                      {openFaqs.includes(faq.id) ? (
-                        <ChevronUp className="w-6 h-6 text-primary-dark/40 flex-shrink-0" />
-                      ) : (
-                        <ChevronDown className="w-6 h-6 text-primary-dark/40 flex-shrink-0" />
-                      )}
-                    </button>
+              {filteredFaqs.length === 0 && (
+                <div className="p-10 border border-slate-100 text-center">
+                  <HelpCircle className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-400 font-bold text-sm uppercase tracking-wider">
+                    No questions found
+                  </p>
+                </div>
+              )}
 
-                    <AnimatePresence>
-                      {openFaqs.includes(faq.id) && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="px-6 pb-6 pt-2 border-t border-primary/10">
-                            <p className="text-primary-dark/80 leading-relaxed">
-                              {faq.answer}
-                            </p>
+              <div className="divide-y divide-slate-100 border border-slate-100">
+                {filteredFaqs.map((faq) => {
+                  const isOpen = openFaqs.includes(faq.id);
+                  const catLabel = categories.find(
+                    (c) => c.id === faq.category,
+                  )?.label;
+                  return (
+                    <div key={faq.id}>
+                      <button
+                        onClick={() => toggleFaq(faq.id)}
+                        className={`w-full text-left flex items-start justify-between gap-4 px-6 py-5 transition-colors ${
+                          isOpen ? "bg-slate-50" : "hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-4 min-w-0">
+                          <div
+                            className={`shrink-0 w-8 h-8 flex items-center justify-center transition-colors ${
+                              isOpen ? "bg-accent" : "bg-accent/10"
+                            }`}
+                          >
+                            <HelpCircle
+                              className={`w-4 h-4 ${isOpen ? "text-primary-dark" : "text-accent"}`}
+                            />
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
+                          <div className="min-w-0">
+                            <h3 className="font-black text-primary-dark text-sm md:text-base uppercase tracking-tight leading-snug">
+                              {faq.question}
+                            </h3>
+                            <span className="inline-block mt-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                              {catLabel}
+                            </span>
+                          </div>
+                        </div>
+                        <ChevronDown
+                          className={`shrink-0 w-5 h-5 text-slate-400 transition-transform duration-300 mt-1 ${
+                            isOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-6 pb-6 pt-1 pl-[72px] border-t border-slate-100 bg-slate-50">
+                              <p className="text-slate-600 text-sm leading-relaxed">
+                                {faq.answer}
+                              </p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Ask Question Form */}
-            <div className="bg-white rounded-3xl shadow-xl border border-primary/10 p-8">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-dark flex items-center justify-center">
-                  <Plus className="w-6 h-6 text-white" />
+            {/* Ask a question form */}
+            <div className="bg-surface border border-slate-100">
+              <div className="px-6 md:px-8 py-6 border-b border-slate-100 flex items-center gap-4">
+                <div className="w-11 h-11 bg-accent flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
+                  <Plus className="w-5 h-5 text-primary-dark" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-primary-dark">
+                  <h2 className="font-black text-primary-dark uppercase tracking-tight text-base md:text-lg">
                     Ask a Question
                   </h2>
-                  <p className="text-primary-dark/70">
-                    Can't find what you're looking for? Ask us directly!
+                  <p className="text-slate-500 text-sm mt-0.5">
+                    Can't find what you're looking for? Ask us directly.
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-primary-dark mb-2">
-                      Your Name *
-                    </label>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="px-6 md:px-8 py-8 space-y-5"
+              >
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <FieldWrapper label="Your Name" error={errors.name?.message}>
                     <input
                       {...register("name")}
-                      type="text"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.name ? "border-red-300" : "border-primary/20"
-                      } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                       placeholder="John Doe"
+                      className={`${inputBase} ${errors.name ? inputError : inputNormal}`}
                     />
-                    {errors.name && (
-                      <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.name.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-primary-dark mb-2">
-                      Email Address *
-                    </label>
+                  </FieldWrapper>
+                  <FieldWrapper
+                    label="Email Address"
+                    error={errors.email?.message}
+                  >
                     <input
                       {...register("email")}
                       type="email"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.email ? "border-red-300" : "border-primary/20"
-                      } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                       placeholder="john@example.com"
+                      className={`${inputBase} ${errors.email ? inputError : inputNormal}`}
                     />
-                    {errors.email && (
-                      <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
+                  </FieldWrapper>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-primary-dark mb-2">
-                    Category *
-                  </label>
+                <FieldWrapper label="Category" error={errors.category?.message}>
                   <select
                     {...register("category")}
-                    className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.category ? "border-red-300" : "border-primary/20"
-                    } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
+                    className={`${inputBase} ${errors.category ? inputError : inputNormal}`}
                   >
                     <option value="admissions">Admissions</option>
                     <option value="academics">Academics</option>
@@ -628,64 +511,44 @@ export default function FAQPage() {
                     <option value="extracurricular">Extracurricular</option>
                     <option value="general">General</option>
                   </select>
-                  {errors.category && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.category.message}
-                    </p>
-                  )}
-                </div>
+                </FieldWrapper>
 
-                <div>
-                  <label className="block text-sm font-semibold text-primary-dark mb-2">
-                    Your Question *
-                  </label>
+                <FieldWrapper
+                  label="Your Question"
+                  error={errors.question?.message}
+                >
                   <textarea
                     {...register("question")}
                     rows={4}
-                    className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.question ? "border-red-300" : "border-primary/20"
-                    } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none`}
-                    placeholder="Type your question here..."
+                    placeholder="Type your question here…"
+                    className={`${inputBase} resize-none ${errors.question ? inputError : inputNormal}`}
                   />
-                  <div className="flex justify-between mt-2">
-                    {errors.question && (
-                      <p className="text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.question.message}
-                      </p>
-                    )}
-                    <span className="text-sm text-primary-dark/50 ml-auto">
-                      {watch("question")?.length || 0}/500 characters
-                    </span>
-                  </div>
-                </div>
+                  <p className="text-right text-xs text-slate-400 mt-1.5 font-medium">
+                    {watch("question")?.length || 0} / 500
+                  </p>
+                </FieldWrapper>
 
                 <div>
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       {...register("agreeToTerms")}
-                      className="w-5 h-5 mt-1 text-accent border-primary/20 rounded focus:ring-accent"
+                      className="w-4 h-4 mt-0.5 accent-amber-500"
                     />
-                    <span className="text-primary-dark text-sm">
-                      I agree that Kibali Educational Centre may use my question
-                      and its answer to help other parents and students. *
+                    <span className="text-sm text-slate-600 leading-relaxed">
+                      I agree that Kibali may use my question and its answer to
+                      help other parents and students.{" "}
+                      <span className="text-accent">*</span>
                     </span>
                   </label>
-                  {errors.agreeToTerms && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.agreeToTerms.message}
-                    </p>
-                  )}
+                  <ErrorMsg message={errors.agreeToTerms?.message} />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-4 px-8 rounded-xl font-semibold text-lg bg-gradient-to-r from-accent to-accent-dark text-white hover:shadow-xl hover:shadow-accent/25 hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
+                  className="w-full py-5 px-8 bg-accent text-primary-dark font-black text-xs uppercase tracking-widest rounded-sm hover:bg-primary-dark hover:text-surface transition-colors shadow-xl shadow-accent/20 flex items-center justify-center gap-3"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                   Submit Question
                 </button>
               </form>
@@ -694,5 +557,41 @@ export default function FAQPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function FieldWrapper({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-black uppercase tracking-[0.2em] text-primary-dark mb-2">
+        {label} <span className="text-accent">*</span>
+      </label>
+      {children}
+      <ErrorMsg message={error} />
+    </div>
+  );
+}
+
+function ErrorMsg({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <motion.p
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-2 text-xs text-red-500 flex items-center gap-1.5 font-medium"
+    >
+      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+      {message}
+    </motion.p>
   );
 }

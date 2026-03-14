@@ -45,7 +45,7 @@ export function SchoolStats() {
   return (
     <section
       ref={ref}
-      className="bg-[var(--kibali-bg)] py-24 md:py-32 border-y border-slate-200"
+      className="bg-background py-24 md:py-32 border-y border-slate-200"
     >
       <div className="max-w-7xl mx-auto px-6">
         {/* Minimalist Header */}

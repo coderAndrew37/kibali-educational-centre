@@ -15,54 +15,92 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import PageHero from "../_components/PageHero";
 
-// Zod Schema for Contact Form
+// ─── Schema ──────────────────────────────────────────────────────────────────
+
 const contactSchema = z.object({
   firstName: z
     .string()
-    .min(2, { message: "First name must be at least 2 characters" })
-    .max(50, { message: "First name cannot exceed 50 characters" })
-    .regex(/^[a-zA-Z\s]+$/, { message: "First name can only contain letters" }),
-
+    .min(2)
+    .max(50)
+    .regex(/^[a-zA-Z\s]+$/),
   lastName: z
     .string()
-    .min(2, { message: "Last name must be at least 2 characters" })
-    .max(50, { message: "Last name cannot exceed 50 characters" })
-    .regex(/^[a-zA-Z\s]+$/, { message: "Last name can only contain letters" }),
-
-  email: z
-    .string()
-    .email({ message: "Please enter a valid email address" })
-    .max(100, { message: "Email cannot exceed 100 characters" }),
-
+    .min(2)
+    .max(50)
+    .regex(/^[a-zA-Z\s]+$/),
+  email: z.string().email().max(100),
   phone: z
     .string()
-    .regex(/^\+?[1-9]\d{1,14}$/, {
-      message: "Please enter a valid phone number",
-    })
+    .regex(/^\+?[1-9]\d{1,14}$/)
     .optional()
     .or(z.literal("")),
-
-  subject: z
-    .string()
-    .min(5, { message: "Subject must be at least 5 characters" })
-    .max(100, { message: "Subject cannot exceed 100 characters" }),
-
-  message: z
-    .string()
-    .min(20, { message: "Message must be at least 20 characters" })
-    .max(1000, { message: "Message cannot exceed 1000 characters" }),
-
-  preferredContact: z.enum(["email", "phone"], {
-    message: "Please select a preferred contact method",
-  }),
-
-  agreeToPrivacy: z.boolean().refine((val) => val === true, {
+  subject: z.string().min(5).max(100),
+  message: z.string().min(20).max(1000),
+  preferredContact: z.enum(["email", "phone"]),
+  agreeToPrivacy: z.boolean().refine((v) => v === true, {
     message: "You must agree to the privacy policy",
   }),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
+
+// ─── Data ────────────────────────────────────────────────────────────────────
+
+const contactInfo = [
+  {
+    icon: Phone,
+    title: "Phone Numbers",
+    details: ["+254 712 345 678", "+254 723 456 789"],
+    gradient: "from-blue-400 to-cyan-500",
+  },
+  {
+    icon: Mail,
+    title: "Email Address",
+    details: ["info@kibalieducentre.ac.ke", "admissions@kibalieducentre.ac.ke"],
+    gradient: "from-emerald-400 to-teal-500",
+  },
+  {
+    icon: MapPin,
+    title: "Visit Campus",
+    details: ["Kibali Road, Nairobi", "P.O. Box 12345-00100"],
+    gradient: "from-accent to-accent-dark",
+  },
+  {
+    icon: Clock,
+    title: "Office Hours",
+    details: ["Mon – Fri: 7:30 AM – 5:00 PM", "Sat: 8:00 AM – 1:00 PM"],
+    gradient: "from-primary to-primary-dark",
+  },
+];
+
+const faqs = [
+  {
+    question: "How quickly can I expect a response?",
+    answer:
+      "We respond to all inquiries within 24 hours during business days. For urgent matters, please call our main office line.",
+  },
+  {
+    question: "Do you offer campus tours?",
+    answer:
+      "Yes! We offer guided campus tours Monday through Friday. Please schedule at least 24 hours in advance.",
+  },
+  {
+    question: "What documents do I need for admission inquiries?",
+    answer:
+      "For initial inquiries, we only need basic contact information. For formal applications, we'll request academic records and other documents.",
+  },
+];
+
+// ─── Shared input className ───────────────────────────────────────────────────
+
+const inputBase =
+  "w-full px-4 py-3 bg-background border text-primary-dark placeholder:text-slate-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200 rounded-sm";
+const inputError = "border-red-300";
+const inputNormal = "border-slate-200";
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -90,436 +128,282 @@ export default function ContactPage() {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
+    await new Promise((r) => setTimeout(r, 1500));
     console.log("Form submitted:", data);
     setIsSubmitted(true);
     reset();
     setIsSubmitting(false);
-
-    // Reset success message after 5 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 5000);
+    setTimeout(() => setIsSubmitted(false), 5000);
   };
 
-  const contactInfo = [
-    {
-      icon: <Phone className="w-6 h-6" />,
-      title: "Phone Numbers",
-      details: ["+254 712 345 678", "+254 723 456 789"],
-      color: "from-blue-400 to-cyan-500",
-    },
-    {
-      icon: <Mail className="w-6 h-6" />,
-      title: "Email Address",
-      details: [
-        "info@kibalieducentre.ac.ke",
-        "admissions@kibalieducentre.ac.ke",
-      ],
-      color: "from-emerald-400 to-teal-500",
-    },
-    {
-      icon: <MapPin className="w-6 h-6" />,
-      title: "Visit Campus",
-      details: ["Kibali Road, Nairobi", "P.O. Box 12345-00100"],
-      color: "from-amber-400 to-orange-500",
-    },
-    {
-      icon: <Clock className="w-6 h-6" />,
-      title: "Office Hours",
-      details: ["Mon - Fri: 7:30 AM - 5:00 PM", "Sat: 8:00 AM - 1:00 PM"],
-      color: "from-purple-400 to-violet-500",
-    },
-  ];
-
   return (
-    <main className="min-h-screen pt-20 bg-gradient-to-b from-white via-primary/5 to-background">
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-dark via-primary to-accent overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-dark/90 via-primary/80 to-accent/70" />
-          <motion.div
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-white/10 to-accent/20 blur-3xl"
-            animate={{
-              y: [0, -50, 0],
-              x: [0, 50, 0],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
+    <main className="min-h-screen bg-background overflow-x-hidden">
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <PageHero
+        image="/campus-1.jpg"
+        eyebrow="Kibali Educational Centre"
+        title="Get in Touch"
+        accentWord="Touch"
+        tagline="We're here to answer your questions and help you discover how Kibali can transform your child's educational journey."
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Contact", href: "#" },
+        ]}
+        overlayOpacity={0.7}
+        minHeight="60vh"
+      />
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6"
-            >
-              Get in <span className="text-accent">Touch</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-white/80 max-w-3xl mx-auto"
-            >
-              We're here to answer your questions and help you discover how
-              Kibali can transform your child's educational journey.
-            </motion.p>
-          </div>
-        </div>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Success Message */}
-        <AnimatePresence>
-          {isSubmitted && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mb-8 p-6 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-2xl shadow-lg"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-white" />
-                </div>
+      {/* ── Main content ─────────────────────────────────────────────────── */}
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Success toast */}
+          <AnimatePresence>
+            {isSubmitted && (
+              <motion.div
+                initial={{ opacity: 0, y: -16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                className="mb-10 flex items-center gap-4 p-6 bg-emerald-50 border border-emerald-200 rounded-sm"
+              >
+                <CheckCircle className="w-6 h-6 text-emerald-600 shrink-0" />
                 <div>
-                  <h3 className="text-xl font-bold text-emerald-900 mb-1">
-                    Message Sent Successfully!
-                  </h3>
-                  <p className="text-emerald-700">
-                    Thank you for contacting Kibali Educational Centre. Our team
-                    will respond within 24 hours.
+                  <p className="font-black text-emerald-900 text-sm uppercase tracking-widest mb-0.5">
+                    Message Sent
+                  </p>
+                  <p className="text-emerald-700 text-sm">
+                    Our team will respond within 24 hours.
                   </p>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="grid lg:grid-cols-3 gap-12 items-start">
+            {/* ── Sidebar: contact info ──────────────────────────────────── */}
+            <aside className="lg:col-span-1 space-y-4 lg:sticky lg:top-32">
+              {/* Eyebrow */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-1 w-10 bg-gradient-to-r from-accent to-accent-dark rounded-full" />
+                <span className="text-accent font-black uppercase tracking-[0.3em] text-xs">
+                  Contact Info
+                </span>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Information */}
-          <div className="lg:col-span-1 space-y-8">
-            <div className="bg-white rounded-3xl shadow-xl border border-primary/10 p-8">
-              <h2 className="text-3xl font-bold text-primary-dark mb-8">
-                Contact Information
-              </h2>
-
-              <div className="space-y-6">
-                {contactInfo.map((item, index) => (
+              {contactInfo.map((item, i) => {
+                const Icon = item.icon;
+                return (
                   <motion.div
                     key={item.title}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-4 p-4 rounded-2xl hover:bg-primary/5 transition-colors"
+                    transition={{ delay: i * 0.08 }}
+                    className="flex items-start gap-5 p-6 bg-surface border border-slate-100 hover:border-accent/30 transition-colors duration-300"
                   >
                     <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center flex-shrink-0`}
+                      className={`w-11 h-11 rounded-sm bg-gradient-to-br ${item.gradient} flex items-center justify-center shrink-0`}
                     >
-                      <div className="text-white">{item.icon}</div>
+                      <Icon className="w-5 h-5 text-white stroke-2" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-primary-dark mb-1">
+                      <p className="font-black text-primary-dark text-xs uppercase tracking-widest mb-2">
                         {item.title}
-                      </h3>
-                      {item.details.map((detail, i) => (
-                        <p key={i} className="text-primary-dark/70">
-                          {detail}
+                      </p>
+                      {item.details.map((d) => (
+                        <p
+                          key={d}
+                          className="text-slate-500 text-sm leading-relaxed"
+                        >
+                          {d}
                         </p>
                       ))}
                     </div>
                   </motion.div>
-                ))}
-              </div>
+                );
+              })}
 
-              {/* Map Preview */}
-              <div className="mt-8 pt-8 border-t border-primary/10">
-                <h3 className="font-bold text-primary-dark mb-4">
-                  Visit Our Campus
-                </h3>
-                <div className="relative h-48 rounded-xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent/50 flex items-center justify-center">
-                    <div className="text-center p-6">
-                      <MapPin className="w-12 h-12 text-white/80 mx-auto mb-4" />
-                      <p className="text-white font-semibold">
-                        Kibali Road, Nairobi
-                      </p>
-                      <p className="text-white/60 text-sm">
-                        Click for directions
-                      </p>
-                    </div>
+              {/* Map placeholder */}
+              <div className="relative h-44 bg-primary-dark overflow-hidden border border-slate-800 mt-6">
+                <div
+                  className="absolute inset-0 opacity-[0.06]"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                  }}
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                  <div className="w-10 h-10 rounded-sm bg-accent flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-primary-dark" />
                   </div>
+                  <p className="text-surface font-black text-xs uppercase tracking-widest">
+                    Kibali Road, Nairobi
+                  </p>
+                  <p className="text-surface/40 text-[10px] uppercase tracking-wider">
+                    Click for directions
+                  </p>
                 </div>
               </div>
-            </div>
-          </div>
+            </aside>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-3xl shadow-xl border border-primary/10 p-8">
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold text-primary-dark mb-2">
-                  Send Us a Message
+            {/* ── Form ──────────────────────────────────────────────────── */}
+            <div className="lg:col-span-2">
+              {/* Section header */}
+              <div className="mb-10">
+                <h2 className="text-4xl md:text-5xl font-black text-primary-dark tracking-tight leading-[1.1] mb-3">
+                  Send Us a <span className="text-accent">Message</span>
                 </h2>
-                <p className="text-primary-dark/70">
+                <p className="text-slate-500 text-lg">
                   Fill out the form below and we'll get back to you as soon as
                   possible.
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                {/* Name Fields */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      htmlFor="firstName"
-                      className="block text-sm font-semibold text-primary-dark mb-2"
-                    >
-                      First Name *
-                    </label>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Name row */}
+                <div className="grid md:grid-cols-2 gap-5">
+                  <FieldWrapper
+                    label="First Name"
+                    error={errors.firstName?.message}
+                  >
                     <input
                       {...register("firstName")}
-                      type="text"
-                      id="firstName"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.firstName
-                          ? "border-red-300"
-                          : "border-primary/20"
-                      } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                       placeholder="John"
+                      className={`${inputBase} ${errors.firstName ? inputError : inputNormal}`}
                     />
-                    {errors.firstName && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mt-2 text-sm text-red-600 flex items-center gap-1"
-                      >
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.firstName.message}
-                      </motion.p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="lastName"
-                      className="block text-sm font-semibold text-primary-dark mb-2"
-                    >
-                      Last Name *
-                    </label>
+                  </FieldWrapper>
+                  <FieldWrapper
+                    label="Last Name"
+                    error={errors.lastName?.message}
+                  >
                     <input
                       {...register("lastName")}
-                      type="text"
-                      id="lastName"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.lastName ? "border-red-300" : "border-primary/20"
-                      } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                       placeholder="Doe"
+                      className={`${inputBase} ${errors.lastName ? inputError : inputNormal}`}
                     />
-                    {errors.lastName && (
-                      <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.lastName.message}
-                      </p>
-                    )}
-                  </div>
+                  </FieldWrapper>
                 </div>
 
-                {/* Contact Fields */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-semibold text-primary-dark mb-2"
-                    >
-                      Email Address *
-                    </label>
+                {/* Contact row */}
+                <div className="grid md:grid-cols-2 gap-5">
+                  <FieldWrapper
+                    label="Email Address"
+                    error={errors.email?.message}
+                  >
                     <input
                       {...register("email")}
                       type="email"
-                      id="email"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.email ? "border-red-300" : "border-primary/20"
-                      } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                       placeholder="john.doe@example.com"
+                      className={`${inputBase} ${errors.email ? inputError : inputNormal}`}
                     />
-                    {errors.email && (
-                      <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="phone"
-                      className="block text-sm font-semibold text-primary-dark mb-2"
-                    >
-                      Phone Number
-                    </label>
+                  </FieldWrapper>
+                  <FieldWrapper
+                    label="Phone Number"
+                    error={errors.phone?.message}
+                    optional
+                  >
                     <input
                       {...register("phone")}
                       type="tel"
-                      id="phone"
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.phone ? "border-red-300" : "border-primary/20"
-                      } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                       placeholder="+254 712 345 678"
+                      className={`${inputBase} ${errors.phone ? inputError : inputNormal}`}
                     />
-                    {errors.phone && (
-                      <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.phone.message}
-                      </p>
-                    )}
-                  </div>
+                  </FieldWrapper>
                 </div>
 
                 {/* Subject */}
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-semibold text-primary-dark mb-2"
-                  >
-                    Subject *
-                  </label>
+                <FieldWrapper label="Subject" error={errors.subject?.message}>
                   <input
                     {...register("subject")}
-                    type="text"
-                    id="subject"
-                    className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.subject ? "border-red-300" : "border-primary/20"
-                    } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all`}
                     placeholder="What would you like to discuss?"
+                    className={`${inputBase} ${errors.subject ? inputError : inputNormal}`}
                   />
-                  {errors.subject && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.subject.message}
-                    </p>
-                  )}
-                </div>
+                </FieldWrapper>
 
-                {/* Preferred Contact Method */}
+                {/* Preferred contact */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary-dark mb-4">
-                    Preferred Contact Method *
-                  </label>
-                  <div className="flex flex-wrap gap-4">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-primary-dark mb-4">
+                    Preferred Contact Method{" "}
+                    <span className="text-accent">*</span>
+                  </p>
+                  <div className="flex gap-6">
                     {["email", "phone"].map((method) => (
                       <label
                         key={method}
-                        className="flex items-center gap-3 cursor-pointer"
+                        className="flex items-center gap-3 cursor-pointer group"
                       >
                         <input
                           type="radio"
                           value={method}
                           {...register("preferredContact")}
-                          className="w-5 h-5 text-accent border-primary/20 focus:ring-accent"
+                          className="w-4 h-4 accent-amber-500"
                         />
-                        <span className="text-primary-dark capitalize">
+                        <span className="text-sm font-bold text-slate-600 uppercase tracking-wider group-hover:text-primary-dark transition-colors">
                           {method === "email" ? "Email" : "Phone Call"}
                         </span>
                       </label>
                     ))}
                   </div>
-                  {errors.preferredContact && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.preferredContact.message}
-                    </p>
-                  )}
+                  <ErrorMsg message={errors.preferredContact?.message} />
                 </div>
 
                 {/* Message */}
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-semibold text-primary-dark mb-2"
-                  >
-                    Your Message *
-                  </label>
+                <FieldWrapper
+                  label="Your Message"
+                  error={errors.message?.message}
+                >
                   <textarea
                     {...register("message")}
-                    id="message"
                     rows={6}
-                    className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.message ? "border-red-300" : "border-primary/20"
-                    } focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none`}
-                    placeholder="Please provide details about your inquiry..."
+                    placeholder="Please provide details about your inquiry…"
+                    className={`${inputBase} resize-none ${errors.message ? inputError : inputNormal}`}
                   />
-                  <div className="flex justify-between mt-2">
-                    {errors.message && (
-                      <p className="text-sm text-red-600 flex items-center gap-1">
-                        <AlertCircle className="w-4 h-4" />
-                        {errors.message.message}
-                      </p>
-                    )}
-                    <span className="text-sm text-primary-dark/50 ml-auto">
-                      {watch("message")?.length || 0}/1000 characters
-                    </span>
-                  </div>
-                </div>
+                  <p className="text-right text-xs text-slate-400 mt-1.5 font-medium">
+                    {watch("message")?.length || 0} / 1000
+                  </p>
+                </FieldWrapper>
 
-                {/* Privacy Policy */}
+                {/* Privacy */}
                 <div>
-                  <label className="flex items-start gap-3 cursor-pointer">
+                  <label className="flex items-start gap-3 cursor-pointer group">
                     <input
                       type="checkbox"
                       {...register("agreeToPrivacy")}
-                      className="w-5 h-5 mt-1 text-accent border-primary/20 rounded focus:ring-accent"
+                      className="w-4 h-4 mt-0.5 accent-amber-500"
                     />
-                    <span className="text-primary-dark text-sm">
+                    <span className="text-sm text-slate-600 leading-relaxed">
                       I agree to the{" "}
                       <a
                         href="/privacy-policy"
-                        className="text-accent font-semibold hover:underline"
+                        className="text-accent font-bold hover:underline"
                       >
                         Privacy Policy
                       </a>{" "}
-                      and understand that my data will be processed in
-                      accordance with it. *
+                      and consent to my data being processed accordingly.{" "}
+                      <span className="text-accent">*</span>
                     </span>
                   </label>
-                  {errors.agreeToPrivacy && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.agreeToPrivacy.message}
-                    </p>
-                  )}
+                  <ErrorMsg message={errors.agreeToPrivacy?.message} />
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                  className={`w-full py-5 px-8 font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 rounded-sm ${
                     isSubmitting
-                      ? "bg-primary/50 cursor-not-allowed"
-                      : "bg-gradient-to-r from-accent to-accent-dark hover:shadow-xl hover:shadow-accent/25 hover:-translate-y-1"
+                      ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                      : "bg-accent text-primary-dark hover:bg-primary-dark hover:text-surface shadow-xl shadow-accent/20"
                   }`}
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span className="text-white">Sending...</span>
+                      <div className="w-4 h-4 border-2 border-slate-400/40 border-t-slate-400 rounded-full animate-spin" />
+                      Sending…
                     </>
                   ) : (
                     <>
-                      <Send className="w-5 h-5" />
-                      <span className="text-white">Send Message</span>
+                      <Send className="w-4 h-4" />
+                      Send Message
                     </>
                   )}
                 </button>
@@ -527,52 +411,150 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FAQ Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-dark mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-primary-dark/70">
-            Quick answers to common inquiries
-          </p>
-        </div>
+      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+      <section className="py-24 px-6 bg-surface border-t border-slate-100">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-3 mb-6">
+              <motion.span
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="text-xl text-accent"
+              >
+                ✦
+              </motion.span>
+              <span className="text-accent font-black uppercase tracking-[0.3em] text-xs">
+                Quick Answers
+              </span>
+              <motion.span
+                animate={{ rotate: -360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="text-xl text-accent"
+              >
+                ✦
+              </motion.span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-primary-dark tracking-tight leading-[1.1]">
+              Frequently Asked <span className="text-accent">Questions</span>
+            </h2>
+          </div>
 
-        <div className="space-y-4">
-          {[
-            {
-              question: "How quickly can I expect a response?",
-              answer:
-                "We respond to all inquiries within 24 hours during business days. For urgent matters, please call our main office line.",
-            },
-            {
-              question: "Do you offer campus tours?",
-              answer:
-                "Yes! We offer guided campus tours Monday through Friday. Please schedule at least 24 hours in advance.",
-            },
-            {
-              question: "What documents do I need for admission inquiries?",
-              answer:
-                "For initial inquiries, we only need basic contact information. For formal applications, we'll request academic records and other documents.",
-            },
-          ].map((faq, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl border border-primary/10 p-6 shadow-sm"
-            >
-              <h3 className="font-bold text-primary-dark mb-2">
-                {faq.question}
-              </h3>
-              <p className="text-primary-dark/70">{faq.answer}</p>
-            </motion.div>
-          ))}
+          <div className="space-y-3">
+            {faqs.map((faq, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-background border border-slate-100 p-8 hover:border-accent/30 transition-colors duration-300"
+              >
+                <h3 className="font-black text-primary-dark text-base uppercase tracking-tight mb-3">
+                  {faq.question}
+                </h3>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                  {faq.answer}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* ── CTA ──────────────────────────────────────────────────────────── */}
+      <section className="relative bg-primary-dark py-24 px-6 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-accent/10 blur-[100px]" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 max-w-4xl mx-auto text-center"
+        >
+          <div className="inline-block px-6 py-2 bg-accent/10 border-y border-accent/30 backdrop-blur-sm mb-8">
+            <span className="text-accent font-black tracking-[0.3em] text-xs uppercase">
+              Ready to Enroll?
+            </span>
+          </div>
+          <h2 className="text-surface text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[1.1] mb-6">
+            Your Child's Future <span className="text-accent">Starts Here</span>
+          </h2>
+          <p className="text-surface/60 text-lg max-w-2xl mx-auto leading-relaxed mb-10">
+            Take the first step toward a world-class CBC education at Kibali
+            Educational Centre.
+          </p>
+          <div className="flex flex-wrap justify-center gap-5">
+            <a
+              href="/admission"
+              className="bg-accent text-primary-dark px-12 py-5 rounded-sm font-black hover:bg-surface transition-all shadow-2xl tracking-tight uppercase text-sm"
+            >
+              Apply Now
+            </a>
+            <a
+              href="/about"
+              className="border-2 border-surface/30 text-surface px-12 py-5 rounded-sm font-bold hover:bg-surface/10 backdrop-blur-sm transition-all uppercase text-sm"
+            >
+              Learn More
+            </a>
+          </div>
+        </motion.div>
+      </section>
     </main>
+  );
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function FieldWrapper({
+  label,
+  error,
+  optional,
+  children,
+}: {
+  label: string;
+  error?: string;
+  optional?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-black uppercase tracking-[0.2em] text-primary-dark mb-2">
+        {label}{" "}
+        {optional ? (
+          <span className="text-slate-400 normal-case tracking-normal font-medium">
+            (optional)
+          </span>
+        ) : (
+          <span className="text-accent">*</span>
+        )}
+      </label>
+      {children}
+      <ErrorMsg message={error} />
+    </div>
+  );
+}
+
+function ErrorMsg({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <motion.p
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-2 text-xs text-red-500 flex items-center gap-1.5 font-medium"
+    >
+      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+      {message}
+    </motion.p>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ChevronRight, ChevronLeft, Phone, Globe } from "lucide-react";
@@ -7,17 +8,13 @@ import { navLinks, NavLinks } from "../data/navLinks";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<NavLinks | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  // Handle hydration to prevent flickering
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Prevent scroll when menu is open
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "unset";
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const closeMenu = () => {
@@ -25,16 +22,14 @@ export default function Navbar() {
     setActiveSection(null);
   };
 
-  if (!mounted) return null; // Or return a skeletal loader
-
   return (
     <header className="fixed top-0 w-full z-[100]">
-      {/* 1. Top Bar - Desktop Only: "hidden lg:block" is key here */}
+      {/* 1. Top Bar — desktop only */}
       <div className="bg-primary-dark text-surface/90 py-2 px-6 hidden lg:block">
         <div className="max-w-7xl mx-auto flex justify-between text-[10px] font-black uppercase tracking-[0.3em]">
           <span className="flex items-center gap-2">
-            <Globe size={12} className="text-accent" /> Kibali Educational
-            Centre
+            <Globe size={12} className="text-accent" />
+            Kibali Educational Centre
           </span>
           <div className="flex gap-8 text-surface/70">
             <span className="flex items-center gap-2">
@@ -58,7 +53,7 @@ export default function Navbar() {
             KIBALI<span className="text-accent text-4xl">.</span>
           </Link>
 
-          {/* Desktop Navigation: hidden lg:flex */}
+          {/* Desktop links */}
           <div className="hidden lg:flex gap-1">
             {navLinks.map((item) => (
               <div key={item.label} className="relative group">
@@ -95,7 +90,6 @@ export default function Navbar() {
             >
               APPLY NOW
             </Link>
-            {/* Mobile Toggle Button: lg:hidden */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden p-2 text-primary-dark"
@@ -106,78 +100,87 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* 3. MOBILE SYSTEM: lg:hidden ensures these never show on desktop */}
-      <div className="lg:hidden">
-        {/* Backdrop */}
-        <div
-          className={`fixed inset-0 bg-primary-dark/60 backdrop-blur-sm z-[90] transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
-          onClick={closeMenu}
-        />
-
-        {/* Sidebar Container */}
-        <div
-          className={`fixed top-0 right-0 h-full w-[320px] bg-white z-[110] transform transition-transform duration-500 shadow-2xl ${isOpen ? "translate-x-0" : "translate-x-full"}`}
-        >
-          {/* Main Sidebar (Layer 1) */}
-          <div className="flex flex-col h-full pt-24 px-6 overflow-y-auto">
-            <div className="space-y-1">
-              {navLinks.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => setActiveSection(item)}
-                  className="w-full flex items-center justify-between py-5 border-b border-slate-50 text-primary-dark font-black text-sm uppercase tracking-tighter"
-                >
-                  {item.label}
-                  <ChevronRight size={18} className="text-accent" />
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-auto pb-10 space-y-4 pt-10">
-              <Link
-                href="/admission"
-                onClick={closeMenu}
-                className="block w-full bg-primary-dark text-white text-center py-4 rounded-xl font-black text-xs uppercase tracking-widest"
-              >
-                Apply Now
-              </Link>
-              <div className="text-center text-slate-400 text-[9px] font-bold uppercase tracking-widest">
-                Kibali Educational Centre © 2026
-              </div>
-            </div>
-          </div>
-
-          {/* Sub-menu (Layer 2 - The Drill Down) */}
+      {/* 3. Mobile menu — conditionally rendered so it is never in the DOM
+              when closed. This is the only reliable fix for Tailwind v4 +
+              Turbopack dev where `lg:hidden` on a wrapper doesn't suppress
+              fixed children consistently during development. */}
+      {isOpen && (
+        <div className="lg:hidden">
+          {/* Backdrop */}
           <div
-            className={`absolute inset-0 bg-white z-[120] p-6 pt-24 transition-transform duration-300 ease-out ${activeSection ? "translate-x-0 shadow-2xl" : "translate-x-full"}`}
-          >
-            <button
-              onClick={() => setActiveSection(null)}
-              className="flex items-center gap-2 text-accent font-black text-xs uppercase tracking-[0.2em] mb-10"
-            >
-              <ChevronLeft size={18} /> Back to Menu
-            </button>
+            className="fixed inset-0 bg-primary-dark/60 backdrop-blur-sm z-[90]"
+            onClick={closeMenu}
+          />
 
-            {activeSection && (
-              <div className="space-y-2">
-                <h3 className="text-2xl font-black text-primary-dark uppercase tracking-tighter mb-8 border-l-4 border-accent pl-4">
-                  {activeSection.label}
-                </h3>
-                {activeSection.children?.map((child) => (
-                  <Link
-                    key={child.label}
-                    href={child.href}
-                    onClick={closeMenu}
-                    className="block py-4 border-b border-slate-50 text-slate-600 font-bold text-sm uppercase tracking-tight"
+          {/* Sidebar */}
+          <div className="fixed top-0 right-0 h-full w-[320px] bg-white z-[110] shadow-2xl">
+            {/* Layer 1 — main links */}
+            <div
+              className={`flex flex-col h-full pt-24 px-6 overflow-y-auto transition-transform duration-300 ${
+                activeSection ? "-translate-x-full" : "translate-x-0"
+              }`}
+            >
+              <div className="space-y-1">
+                {navLinks.map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => setActiveSection(item)}
+                    className="w-full flex items-center justify-between py-5 border-b border-slate-50 text-primary-dark font-black text-sm uppercase tracking-tighter"
                   >
-                    {child.label}
-                  </Link>
+                    {item.label}
+                    <ChevronRight size={18} className="text-accent" />
+                  </button>
                 ))}
               </div>
-            )}
+
+              <div className="mt-auto pb-10 space-y-4 pt-10">
+                <Link
+                  href="/admission"
+                  onClick={closeMenu}
+                  className="block w-full bg-primary-dark text-white text-center py-4 rounded-xl font-black text-xs uppercase tracking-widest"
+                >
+                  Apply Now
+                </Link>
+                <div className="text-center text-slate-400 text-[9px] font-bold uppercase tracking-widest">
+                  Kibali Educational Centre © {new Date().getFullYear()}
+                </div>
+              </div>
+            </div>
+
+            {/* Layer 2 — sub-menu drill-down */}
+            <div
+              className={`absolute inset-0 bg-white z-[120] p-6 pt-24 transition-transform duration-300 ease-out ${
+                activeSection ? "translate-x-0" : "translate-x-full"
+              }`}
+            >
+              <button
+                onClick={() => setActiveSection(null)}
+                className="flex items-center gap-2 text-accent font-black text-xs uppercase tracking-[0.2em] mb-10"
+              >
+                <ChevronLeft size={18} /> Back to Menu
+              </button>
+
+              {activeSection && (
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black text-primary-dark uppercase tracking-tighter mb-8 border-l-4 border-accent pl-4">
+                    {activeSection.label}
+                  </h3>
+                  {activeSection.children?.map((child) => (
+                    <Link
+                      key={child.label}
+                      href={child.href}
+                      onClick={closeMenu}
+                      className="block py-4 border-b border-slate-50 text-slate-600 font-bold text-sm uppercase tracking-tight"
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

@@ -1,42 +1,112 @@
 @import "tailwindcss";
 
-/* 1. Define your Raw Hex Constants in :root for CSS usage */
+/*
+  FONT NOTE: Do NOT import fonts here.
+  Load Inter via next/font/google in layout.tsx (see below).
+*/
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CRITICAL FIX for Tailwind v4 dev/prod parity:
+   
+   @theme MUST use raw hex values — NOT var() references.
+   In v4, @theme is resolved at build/scan time. During Turbopack dev,
+   CSS custom properties defined in :root are not yet in scope when @theme
+   is processed, so var() references silently fall back to transparent/unset.
+   On a full Vercel build everything resolves correctly — hence the mismatch.
+   
+   Rule: define raw values in @theme. Keep :root for any runtime JS access.
+───────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* ── Brand Colors ── */
+  --color-primary: #1e3a8a; /* kibali navy */
+  --color-primary-dark: #111827; /* near-black */
+  --color-accent: #f59e0b; /* amber */
+  --color-accent-dark: #d97706; /* deeper amber for gradients */
+  --color-background: #f8fafc; /* off-white page bg */
+  --color-surface: #ffffff; /* card / component bg */
+
+  /* ── Typography ── */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* ── Spacing extras (optional, keeps max-w-8xl available) ── */
+  --spacing-8xl: 96rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   :root — keep for any runtime CSS var usage (JS, inline styles, etc.)
+   These mirror @theme exactly so both systems stay in sync.
+───────────────────────────────────────────────────────────────────────────── */
 :root {
   --kibali-navy: #1e3a8a;
   --kibali-dark: #111827;
   --kibali-amber: #f59e0b;
+  --kibali-amber-dark: #d97706;
   --kibali-bg: #f8fafc;
   --kibali-white: #ffffff;
 }
 
-/* 2. Map them to Tailwind v4 Theme Variables */
-@theme {
-  --color-primary: var(--kibali-navy);
-  --color-primary-dark: var(--kibali-dark);
-  --color-accent: var(--kibali-amber);
-  --color-background: var(--kibali-bg);
-  --color-surface: var(--kibali-white);
-
-  --font-sans: "Inter", ui-sans-serif, system-ui;
-}
-
-/* 3. Base Styles - Ensuring the body uses our background constant */
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base Styles
+───────────────────────────────────────────────────────────────────────────── */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Prevent font flash / layout shift */
+    font-size: 16px;
+  }
+
   body {
-    background-color: var(--kibali-bg);
-    color: var(--kibali-dark);
-    /* Standardized typography for a school site */
-    font-family: var(--font-sans);
+    background-color: #f8fafc; /* raw value — safe in all environments */
+    color: #111827;
+    font-family:
+      "Inter",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent horizontal overflow from animation overshoots */
+    overflow-x: hidden;
+  }
+
+  /* Consistent heading rendering across dev and prod */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "cv01", "cv03", "cv04"; /* Inter stylistic sets */
+    letter-spacing: -0.02em;
+  }
+
+  /* Remove default button/input font inheritance gap */
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
+  /* Smooth images */
+  img {
+    display: block;
+    max-width: 100%;
   }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* ─────────────────────────────────────────────────────────────────────────────
+   Accessibility
+───────────────────────────────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid #f59e0b; /* accent amber */
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
-/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -44,11 +114,16 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Tab focus styles */
-*:focus-visible {
-  outline: 2px solid #4d96ff;
-  outline-offset: 2px;
-}
+/* ─────────────────────────────────────────────────────────────────────────────
+   SchoolStats fix — replace bg-[var(--kibali-bg)] with a utility alias
+   so it renders identically in dev and prod.
+   
+   In SchoolStats.tsx, change:
+     className="bg-[var(--kibali-bg)] ..."
+   to:
+     className="bg-background ..."   ← maps to #f8fafc via @theme above
+───────────────────────────────────────────────────────────────────────────── */

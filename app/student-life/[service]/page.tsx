@@ -1,3 +1,4 @@
+import PageHero from "@/app/_components/PageHero";
 import { studentLifeData } from "@/app/data/student-life";
 import { StudentLifeData } from "@/types";
 import { CheckCircle2, Shield } from "lucide-react";
@@ -15,41 +16,18 @@ export default async function ServicePage({
 
   return (
     <main className="bg-white">
-      {/* 1. KISC-Style Hero with Background Image */}
-
-      <section className="relative h-screen min-h-[500px] flex items-center overflow-hidden pt-120px">
-        {/* Static Background Image */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url('/student-life-hero.jpg')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          {/* Dark Overlay for Text Legibility */}
-          <div className="absolute inset-0 bg-primary-dark/70" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 z-10 relative w-full">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="h-px w-8 bg-accent" />
-              <p className="text-accent font-black uppercase tracking-[0.3em] text-xs">
-                Student Life
-              </p>
-            </div>
-
-            <h1 className="text-surface text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9]">
-              {data.title}
-            </h1>
-
-            <p className="text-surface/80 text-lg md:text-xl mt-6 max-w-2xl font-medium border-l-2 border-accent pl-6">
-              {data.tagline}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* 1. Hero */}
+      <PageHero
+        image="/student-life-hero.jpg"
+        eyebrow="Student Life"
+        title={data.title}
+        tagline={data.tagline}
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Student Life", href: "/student-life" },
+          { label: data.title, href: "#" },
+        ]}
+      />
 
       {/* 2. Content Grid */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
@@ -90,7 +68,7 @@ export default async function ServicePage({
             ))}
           </div>
 
-          {/* Sidebar Feature List */}
+          {/* Sidebar */}
           <aside className="space-y-8">
             <div className="bg-slate-50 p-10 rounded-[3rem] border border-slate-100 shadow-sm sticky top-40">
               <h3 className="text-xl font-black text-primary-dark mb-8 border-b border-slate-200 pb-4">
