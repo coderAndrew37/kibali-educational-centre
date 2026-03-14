@@ -241,9 +241,10 @@ export default function Testimonials({ data }: Props) {
             initial={{ opacity: 0, scale: 0.97, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg bg-surface shadow-2xl shadow-slate-900/10 overflow-hidden"
+            className="w-full max-w-lg bg-surface shadow-2xl shadow-slate-900/10 overflow-hidden flex flex-col max-h-[90svh]"
           >
-            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+            {/* Sticky header */}
+            <div className="shrink-0 px-6 sm:px-8 py-5 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <p className="text-accent font-black text-[10px] uppercase tracking-[0.3em] mb-1">
                   Community Voices
@@ -259,7 +260,9 @@ export default function Testimonials({ data }: Props) {
                 ✕
               </button>
             </div>
-            <div className="px-8 py-8">
+
+            {/* Scrollable body */}
+            <div className="overflow-y-auto px-6 sm:px-8 py-6 sm:py-8">
               <TestimonialForm onSuccess={() => setIsModalOpen(false)} />
             </div>
           </motion.div>
