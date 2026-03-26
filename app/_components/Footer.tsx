@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   Facebook,
   Twitter,
@@ -11,157 +10,105 @@ import {
   Mail,
   Phone,
   MapPin,
-  Send,
 } from "lucide-react";
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const footerLinks = {
-  Institute: [
-    { name: "Our Story", path: "/about/story" },
-    { name: "The Director", path: "/about/director" },
-    { name: "Academic Team", path: "/about/team" },
-    { name: "Careers", path: "/careers" },
-  ],
-  Admissions: [
-    { name: "Enroll Now", path: "/admission" },
-    { name: "School Calendar", path: "/calendar" },
-    { name: "FAQ", path: "/frequently-asked-questions" },
-    { name: "Gallery", path: "/gallery" },
-  ],
-  Portals: [
-    { name: "Parent Portal", path: "/portals/parents/sign-in" },
-    { name: "Staff Portal", path: "/portals/staff/sign-in" },
-    { name: "Student Portal", path: "/portals/student/sign-in" },
-  ],
-};
-
-const socials = [
-  { Icon: Facebook, href: "#", label: "Facebook" },
-  { Icon: Twitter, href: "#", label: "Twitter" },
-  { Icon: Instagram, href: "#", label: "Instagram" },
-  { Icon: Linkedin, href: "#", label: "LinkedIn" },
-];
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setSubscribed(true);
-    setEmail("");
-    setTimeout(() => setSubscribed(false), 4000);
+  const footerLinks = {
+    institute: [
+      { name: "Our Story", path: "/about/story" },
+      { name: "The Director", path: "/about/director" },
+      { name: "Academic Team", path: "/about/team" },
+      { name: "Careers", path: "/careers" },
+    ],
+    admissions: [
+      { name: "Enrollment", path: "/admission" },
+      { name: "School Calendar", path: "/calendar" },
+      { name: "FAQ", path: "/frequently-asked-questions" },
+      { name: "Gallery", path: "/gallery" },
+    ],
+    portals: [
+      { name: "Parent Portal", path: "/portals/parents/sign-in" },
+      // { name: "Staff Portal", path: "/portals/staff/sign-in" },
+      // { name: "Student Portal", path: "/portals/student/sign-in" },
+    ],
   };
 
   return (
-    <footer className="bg-primary-dark overflow-hidden">
-      {/* ── Newsletter band ──────────────────────────────────────────────── */}
-      <div className="relative border-b border-white/10 overflow-hidden">
-        {/* Grid texture */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-accent/10 blur-[80px]" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-7">
-            <div>
-              <div className="inline-block px-5 py-2 bg-accent/10 border-y border-accent/30 mb-4">
-                <span className="text-accent font-black tracking-[0.3em] text-[10px] uppercase">
-                  Institutional Updates
-                </span>
-              </div>
-              <p className="text-surface/50 text-sm leading-relaxed max-w-xs">
-                Join our community for academic insights and school news.
-              </p>
-            </div>
-
-            <form
-              onSubmit={handleSubscribe}
-              className="flex w-full sm:w-auto gap-px"
-            >
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
-                className="w-full sm:w-64 bg-white/5 border border-white/10 px-4 py-3 text-sm text-surface placeholder:text-surface/30 focus:outline-none focus:border-accent transition-colors"
-              />
-              <button
-                type="submit"
-                className="shrink-0 bg-accent text-primary-dark px-5 py-3 font-black text-xs uppercase tracking-widest hover:bg-surface transition-colors flex items-center gap-2"
-              >
-                {subscribed ? (
-                  <span>Done ✓</span>
-                ) : (
-                  <>
-                    <Send className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Subscribe</span>
-                  </>
-                )}
-              </button>
-            </form>
+    <footer className="bg-[var(--kibali-bg)] text-[var(--kibali-navy)] border-t border-slate-200">
+      {/* 1. Newsletter - Solid Dark Section */}
+      <div className="bg-[var(--kibali-dark)] py-12">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="max-w-md">
+            <h3 className="text-[10px] uppercase tracking-[0.4em] text-[var(--kibali-amber)] font-bold mb-2">
+              Institutional Updates
+            </h3>
+            <p className="text-slate-400 text-sm font-light italic">
+              Join our community for academic insights and school news.
+            </p>
           </div>
+          <form className="flex w-full lg:w-auto gap-px bg-white/10 p-1 border border-white/10 rounded-sm">
+            <input
+              type="email"
+              placeholder="Email address"
+              className="bg-transparent px-4 py-2 text-sm focus:outline-none w-full lg:w-64 text-white placeholder:text-slate-500"
+            />
+            <button className="bg-[var(--kibali-amber)] hover:bg-white text-slate-900 px-6 py-2 text-xs font-bold transition-all uppercase tracking-widest">
+              Subscribe
+            </button>
+          </form>
         </div>
       </div>
 
-      {/* ── Main body ────────────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-12">
-          {/* Brand column */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-2 space-y-8">
-            {/* Logo mark */}
-            <Link href="/" className="inline-block">
-              <span className="text-2xl font-black text-surface tracking-tighter">
-                KIBALI
-                <span className="text-accent text-4xl leading-none">.</span>
-              </span>
-            </Link>
+      {/* 2. Main Navigation */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <div>
+              <h2 className="text-2xl font-serif tracking-tight text-slate-900 mb-4 uppercase">
+                Kibali{" "}
+                <span className="text-[var(--kibali-amber)]">
+                  Educational Centre
+                </span>
+              </h2>
+              <p className="text-slate-600 text-sm leading-relaxed max-w-sm font-light">
+                Registered by the Ministry of Education. Providing world-class
+                CBC education with a focus on leadership and integrity.
+              </p>
+            </div>
 
-            <p className="text-surface/45 text-sm leading-relaxed max-w-xs">
-              Registered by the Ministry of Education. Providing world-class CBC
-              education with a focus on leadership and integrity.
-            </p>
-
-            {/* Contact details */}
-            <ul className="space-y-3.5">
-              {[
-                { Icon: MapPin, text: "Lang'ata Road, Karen South, Nairobi" },
-                { Icon: Phone, text: "+254 712 345 678" },
-                { Icon: Mail, text: "info@kibali.ac.ke" },
-              ].map(({ Icon, text }) => (
-                <li key={text} className="flex items-start gap-3">
-                  <Icon className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                  <span className="text-xs text-surface/50 leading-relaxed">
-                    {text}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <MapPin className="w-4 h-4 text-[var(--kibali-amber)]" />
+                <span className="text-xs text-slate-600">
+                  Khumsalaba, Kakamega, Kenya
+                </span>
+              </div>
+              <div className="flex items-center gap-4">
+                <Phone className="w-4 h-4 text-[var(--kibali-amber)]" />
+                <span className="text-xs text-slate-600">+254 716 160 303</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <Mail className="w-4 h-4 text-[var(--kibali-amber)]" />
+                <span className="text-xs text-slate-600 border-b border-amber-200">
+                  info@kibali.ac.ke
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Nav columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title} className="space-y-5">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-accent border-b border-white/10 pb-3">
+            <div key={title} className="space-y-6">
+              <h4 className="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold border-b border-slate-100 pb-2">
                 {title}
               </h4>
-              <ul className="space-y-3.5">
+              <ul className="space-y-4">
                 {links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.path}
-                      className="text-xs font-bold text-surface/45 hover:text-accent transition-colors duration-200 uppercase tracking-wide"
+                      className="text-sm text-slate-500 hover:text-[var(--kibali-amber)] transition-colors"
                     >
                       {link.name}
                     </Link>
@@ -173,37 +120,31 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── Bottom bar ───────────────────────────────────────────────────── */}
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-7">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-            {/* Copyright */}
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-surface/30 order-3 sm:order-1">
+      {/* 3. Bottom Bar with Padding */}
+      <div className="border-t border-slate-100 pt-10 pb-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
               © {new Date().getFullYear()} Kibali Educational Centre
-            </p>
-
-            {/* Accreditation badges */}
-            <div className="flex items-center gap-3 order-1 sm:order-2">
-              {["MOE Accredited", "TSC Registered"].map((badge) => (
-                <span
-                  key={badge}
-                  className="text-[9px] font-black uppercase tracking-[0.2em] text-surface/30 border border-white/10 px-3 py-1.5"
-                >
-                  {badge}
-                </span>
-              ))}
             </div>
 
-            {/* Social icons */}
-            <div className="flex items-center gap-4 order-2 sm:order-3">
-              {socials.map(({ Icon, href, label }) => (
+            <div className="flex items-center gap-6">
+              <span className="text-[9px] tracking-[0.2em] font-bold text-slate-300 border border-slate-200 px-3 py-1 rounded-full">
+                MOE ACCREDITED
+              </span>
+              <span className="text-[9px] tracking-[0.2em] font-bold text-slate-300 border border-slate-200 px-3 py-1 rounded-full">
+                TSC REGISTERED
+              </span>
+            </div>
+
+            <div className="flex gap-5">
+              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
                 <Link
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-8 h-8 flex items-center justify-center border border-white/10 hover:border-accent hover:bg-accent/10 transition-colors duration-200 group"
+                  key={i}
+                  href="#"
+                  className="text-slate-300 hover:text-[var(--kibali-amber)] transition-colors"
                 >
-                  <Icon className="w-3.5 h-3.5 text-surface/30 group-hover:text-accent transition-colors duration-200" />
+                  <Icon className="w-4 h-4" />
                 </Link>
               ))}
             </div>
